@@ -1,142 +1,221 @@
-.simulation-page .simulation-complete-card {
-  position: fixed !important;
-  z-index: 30 !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 74px !important;
-  width: min(980px, calc(100vw - 150px)) !important;
-  max-height: calc(100vh - 150px) !important;
-  min-height: 0 !important;
-  margin: 0 !important;
-  padding: 22px !important;
-  display: block !important;
-  overflow-y: auto !important;
-  transform: translateX(-50%) !important;
-  border-radius: 20px !important;
-  border: 1px solid rgba(103, 168, 220, 0.28) !important;
-  background: linear-gradient(145deg, rgba(7, 20, 33, 0.97), rgba(2, 9, 16, 0.96)) !important;
-  box-shadow: 0 35px 100px rgba(0,0,0,.58), 0 0 70px rgba(45,130,190,.08), inset 0 1px rgba(255,255,255,.04) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  animation: sg-result-enter .38s cubic-bezier(.22,.8,.28,1) both !important;
+/* =========================================================
+   SPACEGUARD — FINAL WHAT-IF PRESENTATION
+   Presentation-only overrides. No simulation/data behavior.
+   ========================================================= */
+
+.simulation-page {
+  isolation: isolate;
 }
 
-.simulation-page:has(.simulation-complete-card)::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  background: rgba(0, 5, 10, .38);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+/* -----------------------------
+   CLEAN THREE-ZONE COMPOSITION
+   ----------------------------- */
+.simulation-page .mission-viewport,
+.simulation-page .staging-canvas {
+  z-index: 0;
+}
+
+.simulation-vignette {
+  z-index: 2;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(18, 67, 104, 0.055), transparent 31%),
+    linear-gradient(90deg, rgba(2, 7, 13, 0.82), transparent 29%),
+    linear-gradient(270deg, rgba(2, 7, 13, 0.74), transparent 29%),
+    linear-gradient(0deg, rgba(2, 7, 13, 0.7), transparent 23%);
+}
+
+.simulation-heading {
+  top: 104px;
+  left: 40px;
+  z-index: 8;
+  width: min(360px, 30vw);
   pointer-events: none;
 }
 
-.simulation-page .simulation-complete-card .simulation-result-header {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 210px !important;
-  align-items: start !important;
-  gap: 18px !important;
-  padding: 0 42px 16px 0 !important;
-  border-bottom: 1px solid rgba(103,143,177,.11) !important;
+.simulation-heading .eyebrow {
+  color: #6f9cbb;
+  font-size: 8px;
+  letter-spacing: 0.16em;
 }
 
-.simulation-page .simulation-complete-card .simulation-result-header h2 {
-  margin: 6px 0 0 !important;
-  font-size: clamp(20px, 2vw, 26px) !important;
-  line-height: 1.12 !important;
+.simulation-heading h1 {
+  margin: 5px 0 0;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
 }
 
-.simulation-page .simulation-complete-card .simulation-result-header p {
-  max-width: 620px !important;
-  margin-top: 8px !important;
-  font-size: 10px !important;
-  line-height: 1.6 !important;
+.simulation-heading p {
+  margin-top: 6px;
+  max-width: 330px;
+  color: #647d91;
+  font-size: 9px;
+  line-height: 1.5;
 }
 
-.simulation-page .simulation-complete-card .simulation-result-direction {
-  min-width: 0 !important;
-  width: auto !important;
-  padding: 12px 13px !important;
-  border-radius: 11px !important;
-  text-align: left !important;
-  background: rgba(2,12,21,.55) !important;
+.simulation-config,
+.simulation-status,
+.simulation-bottom-bar {
+  z-index: 9;
+  border: 1px solid rgba(103, 158, 202, 0.2);
+  background: linear-gradient(145deg, rgba(7, 20, 33, 0.9), rgba(2, 10, 18, 0.86));
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.34),
+    inset 0 1px rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
-.simulation-page .simulation-complete-card .simulation-result-direction > strong {
-  font-size: 13px !important;
+.simulation-config {
+  top: 165px;
+  left: 40px;
+  width: 360px;
+  max-height: calc(100dvh - 250px);
+  padding: 18px;
+  border-radius: 17px;
 }
 
-.simulation-page .simulation-complete-card .simulation-comparison-grid {
-  display: grid !important;
-  grid-template-columns: minmax(0,1fr) 78px minmax(0,1fr) !important;
-  gap: 14px !important;
-  padding: 17px 0 14px !important;
+.simulation-config::-webkit-scrollbar {
+  width: 4px;
 }
 
-.simulation-page .simulation-complete-card .simulation-comparison-metric {
-  min-height: 52px !important;
-  padding: 10px 11px !important;
-  border-radius: 10px !important;
-  background: rgba(3,12,21,.44) !important;
+.simulation-config::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: rgba(107, 147, 180, 0.22);
 }
 
-.simulation-page .simulation-complete-card .simulation-comparison-metric > span {
-  font-size: 8px !important;
+.simulation-panel-heading {
+  padding-bottom: 13px;
 }
 
-.simulation-page .simulation-complete-card .simulation-comparison-metric > strong {
-  font-size: 10px !important;
+.simulation-panel-heading strong {
+  font-size: 15px;
 }
 
-.simulation-page .simulation-complete-card .simulation-result-intel {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr) !important;
-  gap: 10px !important;
-  margin-top: 12px !important;
+.simulation-section {
+  padding: 12px 0;
+  gap: 8px;
 }
 
-.simulation-page .simulation-complete-card .simulation-result-intel-card {
-  min-width: 0 !important;
-  min-height: 120px !important;
-  padding: 13px 14px !important;
-  border-radius: 11px !important;
-  background: rgba(8,21,34,.44) !important;
+.simulation-threat-strip {
+  gap: 7px;
 }
 
-.simulation-page .simulation-complete-card .simulation-result-intel-card > strong {
-  font-size: 10px !important;
-  line-height: 1.55 !important;
+.simulation-threat-strip > span,
+.simulation-field,
+.simulation-time-window,
+.simulation-select {
+  background: rgba(3, 12, 21, 0.5);
+  border-color: rgba(92, 145, 188, 0.15);
 }
 
-.simulation-page .simulation-complete-card .simulation-ml-summary {
-  margin-top: 9px !important;
-  gap: 7px !important;
-  font-size: 9px !important;
+.simulation-actions {
+  padding-top: 12px;
 }
 
-.simulation-page .simulation-complete-card .simulation-result-note {
-  margin-top: 13px !important;
-  padding-top: 12px !important;
-  font-size: 9px !important;
+.simulation-primary {
+  min-height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(28, 91, 145, 0.55), rgba(18, 67, 111, 0.48));
+  box-shadow: inset 0 1px rgba(255,255,255,.045), 0 8px 26px rgba(24, 100, 156, .08);
 }
 
-.simulation-page .simulation-complete-card .simulation-complete-close {
-  top: 12px !important;
-  right: 12px !important;
-  width: 30px !important;
-  height: 30px !important;
+.simulation-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
 }
 
+.simulation-status {
+  top: 176px;
+  right: 40px;
+  width: 340px;
+  padding: 17px;
+  border-radius: 17px;
+}
+
+.simulation-status-title strong {
+  font-size: 13px;
+}
+
+.simulation-status-meta {
+  gap: 15px;
+}
+
+.simulation-progress-block {
+  margin-top: 15px;
+}
+
+.simulation-progress-track {
+  height: 5px;
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(33, 62, 86, 0.5);
+}
+
+.simulation-progress-track i {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(90deg, #2f8fff, #66d6e5);
+  box-shadow: 0 0 10px rgba(84, 185, 231, 0.28);
+}
+
+.simulation-progress-track::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 -35%;
+  width: 35%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(228, 250, 255, 0.75), transparent);
+  animation: sg-progress-glint 1.15s ease-in-out infinite;
+}
+
+.simulation-step-list {
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.simulation-step-list span {
+  min-height: 18px;
+  transition: color .18s ease, transform .18s ease;
+}
+
+.simulation-step-list span.current {
+  transform: translateX(2px);
+}
+
+.simulation-bottom-bar {
+  right: 40px;
+  bottom: 28px;
+  left: 40px;
+  min-height: 58px;
+  padding: 9px 14px;
+  border-radius: 15px;
+}
+
+.simulation-bottom-copy strong {
+  font-size: 10px;
+}
+
+.simulation-disclaimer {
+  font-size: 7px;
+}
+
+/* -----------------------------
+   RUNNING STATE
+   ----------------------------- */
 .simulation-page .simulation-status:has(.simulation-state.running) {
-  border-color: rgba(96,184,235,.4) !important;
-  box-shadow: 0 24px 70px rgba(0,0,0,.38), 0 0 38px rgba(49,151,211,.12), inset 0 1px rgba(255,255,255,.035) !important;
-  animation: sg-status-breathe 2.2s ease-in-out infinite !important;
+  border-color: rgba(92, 179, 230, 0.35);
+  box-shadow:
+    0 26px 76px rgba(0,0,0,.38),
+    0 0 38px rgba(44, 145, 205, .11),
+    inset 0 1px rgba(255,255,255,.04);
+  animation: sg-status-breathe 2.3s ease-in-out infinite;
 }
 
 .simulation-page .simulation-state.running {
   position: relative;
-  padding-left: 19px !important;
+  padding-left: 18px;
 }
 
 .simulation-page .simulation-state.running::before {
@@ -147,67 +226,270 @@
   width: 7px;
   height: 7px;
   margin-top: -4px;
-  border: 1px solid rgba(144,234,255,.34);
+  border: 1px solid rgba(144,234,255,.3);
   border-top-color: #8ce8ff;
   border-radius: 50%;
   animation: sg-spinner .8s linear infinite;
 }
 
-.simulation-page .simulation-progress-track {
-  position: relative !important;
-  overflow: hidden !important;
-}
-
-.simulation-page .simulation-progress-track::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -30%;
-  width: 30%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(225,250,255,.8), transparent);
-  animation: sg-glint 1.15s ease-in-out infinite;
-}
-
 .simulation-page:has(.simulation-state.running) .simulation-vignette {
-  animation: sg-vignette 2.8s ease-in-out infinite;
+  animation: sg-vignette-breathe 2.8s ease-in-out infinite;
 }
 
 .simulation-page:has(.simulation-state.running) .simulation-bottom-copy > svg {
-  animation: sg-pulse 1.3s ease-in-out infinite;
+  animation: sg-icon-pulse 1.25s ease-in-out infinite;
 }
 
-@keyframes sg-result-enter {
-  from { opacity: 0; transform: translateX(-50%) translateY(18px) scale(.985); }
+/* -----------------------------
+   RESULT: CLEAN COMMAND-CENTER MODAL
+   ----------------------------- */
+.simulation-page .simulation-complete-card {
+  position: fixed !important;
+  z-index: 40 !important;
+  left: 50% !important;
+  right: auto !important;
+  top: 108px !important;
+  bottom: 88px !important;
+  width: min(1060px, calc(100vw - 470px)) !important;
+  max-height: calc(100vh - 196px) !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 22px !important;
+  display: block !important;
+  overflow-y: auto !important;
+  transform: translateX(-50%) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(111, 174, 224, .28) !important;
+  background: linear-gradient(145deg, rgba(7, 20, 33, .985), rgba(2, 9, 16, .975)) !important;
+  box-shadow:
+    0 38px 110px rgba(0,0,0,.62),
+    0 0 80px rgba(42,128,190,.075),
+    inset 0 1px rgba(255,255,255,.045) !important;
+  backdrop-filter: blur(26px) !important;
+  -webkit-backdrop-filter: blur(26px) !important;
+  opacity: 0;
+  animation: sg-result-reveal .42s cubic-bezier(.22,.8,.28,1) .8s both !important;
+}
+
+.simulation-page:has(.simulation-complete-card)::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background: rgba(0, 5, 10, .34);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  animation: sg-backdrop-reveal .3s ease .68s both;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 200px !important;
+  gap: 18px !important;
+  padding: 0 44px 16px 0 !important;
+  align-items: start !important;
+  border-bottom: 1px solid rgba(103,143,177,.1) !important;
+  animation: sg-card-section .42s ease .98s both;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-header h2 {
+  margin: 6px 0 0 !important;
+  font-size: clamp(20px, 1.7vw, 25px) !important;
+  line-height: 1.12 !important;
+  letter-spacing: -.035em !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-header p {
+  max-width: 620px !important;
+  margin-top: 7px !important;
+  font-size: 9px !important;
+  line-height: 1.6 !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-direction {
+  min-width: 0 !important;
+  padding: 11px 12px !important;
+  border-radius: 11px !important;
+  text-align: left !important;
+  background: rgba(2,12,21,.58) !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-direction > strong {
+  font-size: 12px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-comparison-grid {
+  grid-template-columns: minmax(0,1fr) 72px minmax(0,1fr) !important;
+  gap: 12px !important;
+  padding: 15px 0 14px !important;
+  animation: sg-card-section .42s ease 1.08s both;
+}
+
+.simulation-page .simulation-complete-card .simulation-comparison-metric {
+  min-height: 49px !important;
+  padding: 9px 10px !important;
+  border-radius: 9px !important;
+  background: rgba(3,12,21,.43) !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-comparison-metric > strong {
+  font-size: 9px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-intel {
+  grid-template-columns: minmax(0,1.35fr) minmax(0,.9fr) minmax(0,.9fr) !important;
+  gap: 9px !important;
+  margin-top: 10px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-intel-card {
+  min-height: 106px !important;
+  padding: 12px 13px !important;
+  border-radius: 11px !important;
+  background: rgba(8,21,34,.42) !important;
+  opacity: 0;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-intel-card:nth-child(1) {
+  animation: sg-card-section .42s ease 1.18s both;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-intel-card:nth-child(2) {
+  animation: sg-card-section .42s ease 1.28s both;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-intel-card:nth-child(3) {
+  animation: sg-card-section .42s ease 1.38s both;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-note {
+  margin-top: 11px !important;
+  padding-top: 11px !important;
+  font-size: 8px !important;
+  opacity: 0;
+  animation: sg-card-section .42s ease 1.46s both;
+}
+
+.simulation-page .simulation-complete-card .simulation-complete-close {
+  top: 12px !important;
+  right: 12px !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+/* make result surfaces read as one system */
+.simulation-page .simulation-complete-card .simulation-comparison-column.after {
+  padding-left: 12px;
+}
+
+/* -----------------------------
+   MOTION
+   ----------------------------- */
+@keyframes sg-result-reveal {
+  from { opacity: 0; transform: translateX(-50%) translateY(14px) scale(.985); }
   to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
-@keyframes sg-status-breathe {
-  0%,100% { box-shadow: 0 24px 70px rgba(0,0,0,.38), 0 0 30px rgba(49,151,211,.07), inset 0 1px rgba(255,255,255,.035); }
-  50% { box-shadow: 0 26px 74px rgba(0,0,0,.38), 0 0 44px rgba(49,151,211,.14), inset 0 1px rgba(255,255,255,.035); }
+@keyframes sg-backdrop-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sg-card-section {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes sg-spinner { to { transform: rotate(360deg); } }
-@keyframes sg-glint { 0% { transform: translateX(0); opacity: 0; } 20% { opacity: .9; } 80% { opacity: .75; } 100% { transform: translateX(440%); opacity: 0; } }
-@keyframes sg-vignette { 0%,100% { opacity: .82; } 50% { opacity: 1; } }
-@keyframes sg-pulse { 0%,100% { opacity: .62; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.06); } }
 
-@media (max-width: 1100px) {
+@keyframes sg-progress-glint {
+  0% { transform: translateX(0); opacity: 0; }
+  18% { opacity: .85; }
+  78% { opacity: .65; }
+  100% { transform: translateX(430%); opacity: 0; }
+}
+
+@keyframes sg-status-breathe {
+  0%, 100% { box-shadow: 0 26px 76px rgba(0,0,0,.38), 0 0 30px rgba(44,145,205,.07), inset 0 1px rgba(255,255,255,.04); }
+  50% { box-shadow: 0 28px 80px rgba(0,0,0,.38), 0 0 46px rgba(44,145,205,.14), inset 0 1px rgba(255,255,255,.04); }
+}
+
+@keyframes sg-vignette-breathe {
+  0%, 100% { opacity: .84; }
+  50% { opacity: 1; }
+}
+
+@keyframes sg-icon-pulse {
+  0%, 100% { opacity: .62; transform: scale(.96); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+/* -----------------------------
+   RESPONSIVE
+   ----------------------------- */
+@media (max-width: 1200px) {
+  .simulation-config { left: 24px; width: 330px; }
+  .simulation-status { right: 24px; width: 300px; }
+  .simulation-heading { left: 24px; }
+  .simulation-bottom-bar { right: 24px; left: 24px; }
+  .simulation-page .simulation-complete-card { width: calc(100vw - 420px) !important; }
+}
+
+@media (max-width: 900px) {
+  .simulation-heading { top: 92px; }
+  .simulation-heading h1 { font-size: 20px; }
+  .simulation-config { top: 140px; width: min(320px, 38vw); }
+  .simulation-status { top: 150px; width: 270px; }
   .simulation-page .simulation-complete-card {
-    width: min(920px, calc(100vw - 90px)) !important;
-    left: 50% !important;
-    right: auto !important;
+    top: 88px !important;
+    bottom: 80px !important;
+    width: calc(100vw - 56px) !important;
   }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 680px) {
+  .simulation-heading {
+    top: 76px;
+    left: 14px;
+    width: calc(100vw - 28px);
+  }
+
+  .simulation-heading p { display: none; }
+
+  .simulation-config {
+    top: 126px;
+    left: 14px;
+    width: calc(100vw - 28px);
+    max-height: 50dvh;
+  }
+
+  .simulation-status {
+    top: auto;
+    right: 14px;
+    bottom: 84px;
+    width: calc(100vw - 28px);
+  }
+
+  .simulation-bottom-bar {
+    right: 14px;
+    bottom: 12px;
+    left: 14px;
+    grid-template-columns: 1fr auto;
+  }
+
+  .simulation-disclaimer { display: none; }
+
   .simulation-page .simulation-complete-card {
-    left: 18px !important;
-    right: 18px !important;
-    bottom: 18px !important;
+    top: 14px !important;
+    right: 14px !important;
+    bottom: 14px !important;
+    left: 14px !important;
     width: auto !important;
     transform: none !important;
-    max-height: calc(100vh - 36px) !important;
+    padding: 16px !important;
+    max-height: none !important;
   }
 
   .simulation-page .simulation-complete-card .simulation-result-header,
@@ -216,25 +498,31 @@
     grid-template-columns: 1fr !important;
   }
 
-  .simulation-page .simulation-complete-card .simulation-comparison-column.after {
-    padding-left: 0 !important;
-    border-left: 0 !important;
-    padding-top: 10px !important;
-    border-top: 1px solid rgba(103,143,177,.1) !important;
-  }
-
   .simulation-page .simulation-complete-card .simulation-result-direction {
     width: 100% !important;
+  }
+
+  .simulation-page .simulation-complete-card .simulation-comparison-column.after {
+    padding-left: 0 !important;
+    padding-top: 10px !important;
+    border-left: 0 !important;
+    border-top: 1px solid rgba(103,143,177,.1) !important;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .simulation-page .simulation-complete-card,
+  .simulation-page:has(.simulation-complete-card)::after,
   .simulation-page .simulation-status:has(.simulation-state.running),
   .simulation-page .simulation-state.running::before,
   .simulation-page .simulation-progress-track::after,
   .simulation-page:has(.simulation-state.running) .simulation-vignette,
-  .simulation-page:has(.simulation-state.running) .simulation-bottom-copy > svg {
+  .simulation-page:has(.simulation-state.running) .simulation-bottom-copy > svg,
+  .simulation-page .simulation-complete-card .simulation-result-header,
+  .simulation-page .simulation-complete-card .simulation-comparison-grid,
+  .simulation-page .simulation-complete-card .simulation-result-intel-card,
+  .simulation-page .simulation-complete-card .simulation-result-note {
     animation: none !important;
+    opacity: 1 !important;
   }
 }
