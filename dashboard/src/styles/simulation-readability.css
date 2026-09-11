@@ -239,3 +239,63 @@
     scroll-behavior: auto;
   }
 }
+
+/* =========================================================
+   FINAL SMALL-VIEWPORT COLLISION FIX
+   Keep the heading visually above the configuration card and
+   reserve the lower viewport for the bottom command bar.
+   ========================================================= */
+@media (max-width: 900px) {
+  .simulation-page .simulation-heading {
+    top: 34px !important;
+    left: 24px !important;
+    width: min(360px, calc(100vw - 48px)) !important;
+  }
+
+  .simulation-page .simulation-heading p {
+    max-width: 330px;
+  }
+
+  .simulation-page .simulation-config {
+    top: 132px !important;
+    left: 24px !important;
+    width: min(330px, calc(100vw - 48px)) !important;
+    max-height: calc(100dvh - 250px) !important;
+  }
+
+  .simulation-page .simulation-status {
+    top: 132px !important;
+    right: 24px !important;
+    width: min(280px, calc(100vw - 48px)) !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .simulation-page .simulation-heading {
+    top: 24px !important;
+    left: 18px !important;
+    width: calc(100vw - 36px) !important;
+  }
+
+  .simulation-page .simulation-heading h1 {
+    font-size: 23px !important;
+    line-height: 1.12 !important;
+  }
+
+  .simulation-page .simulation-heading p {
+    display: none;
+  }
+
+  .simulation-page .simulation-config {
+    top: 112px !important;
+    left: 18px !important;
+    width: calc(100vw - 36px) !important;
+    max-height: calc(100dvh - 220px) !important;
+  }
+
+  .simulation-page .simulation-status {
+    top: 112px !important;
+    right: 18px !important;
+    width: calc(100vw - 36px) !important;
+  }
+}
