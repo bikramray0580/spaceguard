@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-pydantic
-sgp4
-pandas
-scikit-learn
-joblib

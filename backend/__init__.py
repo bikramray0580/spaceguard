@@ -1,1 +1,0 @@
-"""SpaceGuard AI backend package."""
