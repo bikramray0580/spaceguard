@@ -30,7 +30,33 @@ def fetch_space_track_gp(norad_cat_id: int = 25544) -> list[dict]:
     client = _get_client()
 
     try:
-        return client.gp(norad_cat_id=norad_cat_id)
+        records = client.gp(norad_cat_id=norad_cat_id)
+
+        for record in records:
+            record["SOURCE"] = "spacetrack"
+
+        return records
+    finally:
+        client.close()
+
+
+def fetch_space_track_gp_batch(limit: int = 250) -> list[dict]:
+    """Fetch a batch of GP records from Space-Track."""
+    if limit < 1:
+        return []
+
+    client = _get_client()
+
+    try:
+        records = client.gp(
+            orderby="NORAD_CAT_ID asc",
+            limit=limit,
+        )
+
+        for record in records:
+            record["SOURCE"] = "spacetrack"
+
+        return records
     finally:
         client.close()
 
