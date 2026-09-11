@@ -11,7 +11,7 @@ planning. No covariance or Probability of Collision is fabricated.
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from math import sqrt
+from math import ceil, sqrt
 
 from conjunction import calculate_conjunction
 from conjunction.models import StateVector
@@ -187,13 +187,14 @@ def evaluate_maneuver(
 
     from .orbit_service import ConjunctionPropagator
     nominal_propagator = ConjunctionPropagator(objects)
-    before = calculate_conjunction(nominal_propagator, object_a, object_b, start, end, step_minutes=step_minutes)
+    samples = max(3, ceil((end - start).total_seconds() / (step_minutes * 60.0)) + 1)
+    before = calculate_conjunction(nominal_propagator, object_a, object_b, start, end, samples=samples)
     before_assessment = assess_upstream_risk(before, None)
 
     maneuver_propagator = ManeuverPropagator(
         objects, object_id, execution_time, delta_v_m_s, direction
     )
-    after = calculate_conjunction(maneuver_propagator, object_a, object_b, start, end, step_minutes=step_minutes)
+    after = calculate_conjunction(maneuver_propagator, object_a, object_b, start, end, samples=samples)
     after_assessment = assess_upstream_risk(after, None)
 
     before_payload = _event_payload(before, before_assessment)
