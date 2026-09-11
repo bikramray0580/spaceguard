@@ -10,15 +10,15 @@ planning. No covariance or Probability of Collision is fabricated.
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from math import sqrt
 
 from conjunction import calculate_conjunction
 from conjunction.models import StateVector
 from orbit_propagation.sgp4.propagator import SGP4Propagator
-from risk import assess_upstream_risk
+from risk.upstream_adapter import assess_upstream_risk
 
-from .data_service import find_object, list_objects
+from .data_service import list_objects
 
 MU_EARTH_KM3_S2 = 398600.4418
 DIRECTIONS = frozenset({
@@ -106,12 +106,12 @@ class ManeuverPropagator:
     def __init__(self, objects, target_id, execution_time, delta_v_m_s, direction):
         self.objects = objects
         self.target_id = target_id
-        self.execution_time = execution_time
+        self.execution_time = execution_time.astimezone(timezone.utc) if execution_time.tzinfo else execution_time.replace(tzinfo=timezone.utc)
         self.delta_v_m_s = delta_v_m_s
         self.direction = direction
         self.sgp4 = SGP4Propagator()
         target = objects[target_id]
-        burn = self.sgp4.propagate(target.line1, target.line2, execution_time)
+        burn = self.sgp4.propagate(target.line1, target.line2, self.execution_time)
         dv = _rtn_delta_v(burn.position, burn.velocity, delta_v_m_s, direction)
         self.burn_position = burn.position
         self.burn_velocity = _add(burn.velocity, dv)
@@ -157,6 +157,7 @@ def evaluate_maneuver(
     object_id: str,
     start: datetime,
     end: datetime,
+    step_minutes: float,
     delta_v_m_s: float,
     direction: str,
     execution_time: datetime,
@@ -173,29 +174,41 @@ def evaluate_maneuver(
         raise ValueError(f"unsupported maneuver direction: {direction}")
     if delta_v_m_s <= 0 or delta_v_m_s > 1000:
         raise ValueError("delta_v_m_s must be greater than 0 and no more than 1000 m/s")
+    if step_minutes <= 0 or step_minutes > 60:
+        raise ValueError("step_minutes must be greater than 0 and no more than 60 minutes")
     if end <= start:
         raise ValueError("end must be later than start")
+
+    start = start.astimezone(timezone.utc) if start.tzinfo else start.replace(tzinfo=timezone.utc)
+    end = end.astimezone(timezone.utc) if end.tzinfo else end.replace(tzinfo=timezone.utc)
+    execution_time = execution_time.astimezone(timezone.utc) if execution_time.tzinfo else execution_time.replace(tzinfo=timezone.utc)
     if execution_time < start or execution_time >= end:
         raise ValueError("execution_time must fall inside the screening window")
 
-    nominal_propagator = __import__("backend.services.orbit_service", fromlist=["ConjunctionPropagator"]).ConjunctionPropagator(objects)
-    before = calculate_conjunction(nominal_propagator, object_a, object_b, start, end)
+    from .orbit_service import ConjunctionPropagator
+    nominal_propagator = ConjunctionPropagator(objects)
+    before = calculate_conjunction(nominal_propagator, object_a, object_b, start, end, step_minutes=step_minutes)
     before_assessment = assess_upstream_risk(before, None)
 
     maneuver_propagator = ManeuverPropagator(
         objects, object_id, execution_time, delta_v_m_s, direction
     )
-    after = calculate_conjunction(maneuver_propagator, object_a, object_b, start, end)
+    after = calculate_conjunction(maneuver_propagator, object_a, object_b, start, end, step_minutes=step_minutes)
     after_assessment = assess_upstream_risk(after, None)
 
     before_payload = _event_payload(before, before_assessment)
     after_payload = _event_payload(after, after_assessment)
+    before_rank = {"LOW": 0, "MEDIUM": 1, "HIGH": 2, "CRITICAL": 3}.get(before_assessment.risk_level.value.upper(), 0)
+    after_rank = {"LOW": 0, "MEDIUM": 1, "HIGH": 2, "CRITICAL": 3}.get(after_assessment.risk_level.value.upper(), 0)
     return {
         "before": before_payload,
         "after": after_payload,
         "risk_change": {
             "before": before_assessment.risk_level.value,
             "after": after_assessment.risk_level.value,
+            "improved": after_rank < before_rank,
+            "worsened": after_rank > before_rank,
+            "unchanged": after_rank == before_rank,
             "miss_distance_delta_km": after.miss_distance_km - before.miss_distance_km,
             "relative_velocity_delta_km_s": after.relative_speed_km_s - before.relative_speed_km_s,
         },
