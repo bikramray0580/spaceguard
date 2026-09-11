@@ -1809,3 +1809,259 @@
     justify-self: start;
   }
 }
+
+/* =========================================================
+   RISK PAGE POLISH · REAL DATA ONLY
+   ========================================================= */
+
+.risk-page-header {
+  padding-bottom: 2px;
+}
+
+.risk-page-header > div:first-child {
+  min-width: 0;
+}
+
+.risk-page-header p {
+  max-width: 620px;
+}
+
+.risk-status-group {
+  align-content: end;
+  max-width: 420px;
+}
+
+.risk-status {
+  min-height: 25px;
+  padding: 0 9px;
+  border: 1px solid rgba(92, 133, 169, 0.16);
+  border-radius: 999px;
+  background: rgba(7, 17, 28, 0.52);
+}
+
+.risk-status.error {
+  color: #b7c0c9;
+  border-color: rgba(255, 111, 97, 0.18);
+  background: rgba(45, 20, 23, 0.24);
+}
+
+.risk-status.loading {
+  color: #8db9df;
+  border-color: rgba(88, 157, 220, 0.18);
+}
+
+.risk-screening-note {
+  color: #60778c;
+  font: 8px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.035em;
+}
+
+.risk-screening-error {
+  max-width: 360px;
+  color: #b88179;
+  font-size: 9px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.risk-refresh-button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-color: rgba(88, 139, 186, 0.22);
+  color: #88bff1;
+  background: rgba(9, 24, 40, 0.52);
+}
+
+.risk-refresh-button:hover:not(:disabled) {
+  color: #dcecff;
+  border-color: rgba(88, 156, 218, 0.38);
+  background: rgba(12, 34, 55, 0.72);
+}
+
+.risk-overview {
+  padding-top: 13px;
+  padding-bottom: 9px;
+}
+
+.risk-summary-button {
+  min-height: 32px;
+}
+
+.risk-workspace {
+  min-height: 390px;
+}
+
+.risk-threats {
+  min-height: 390px;
+}
+
+.risk-section-header {
+  padding-top: 16px;
+  padding-bottom: 13px;
+}
+
+.risk-section-header h2 {
+  font-size: 15px;
+}
+
+.risk-error-state,
+.risk-loading-state {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 16px;
+  border: 1px solid rgba(92, 132, 168, 0.15);
+  border-radius: 13px;
+  background: linear-gradient(
+    90deg,
+    rgba(7, 19, 31, 0.72),
+    rgba(4, 11, 19, 0.55)
+  );
+}
+
+.risk-error-state {
+  border-color: rgba(255, 111, 97, 0.18);
+  background: linear-gradient(
+    90deg,
+    rgba(49, 21, 24, 0.26),
+    rgba(5, 12, 19, 0.56)
+  );
+}
+
+.risk-error-state > svg {
+  color: #ff8879;
+}
+
+.risk-loading-state > svg {
+  color: #78b8eb;
+}
+
+.risk-error-state > div,
+.risk-loading-state > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.risk-error-state strong,
+.risk-loading-state strong {
+  color: #dce8f2;
+  font-size: 11px;
+  font-weight: 540;
+}
+
+.risk-error-state span,
+.risk-loading-state span {
+  color: #73899d;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.risk-error-state button {
+  flex: 0 0 auto;
+  min-height: 31px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 123, 107, 0.2);
+  border-radius: 8px;
+  color: #ffad9f;
+  background: rgba(77, 27, 28, 0.22);
+  font: 10px inherit;
+  cursor: pointer;
+}
+
+.risk-error-state button:hover {
+  border-color: rgba(255, 123, 107, 0.36);
+  background: rgba(96, 31, 30, 0.34);
+}
+
+.risk-loading-state {
+  border-color: rgba(93, 145, 191, 0.16);
+}
+
+.risk-empty {
+  min-height: 300px;
+  padding: 70px 24px 74px;
+  align-content: center;
+}
+
+.risk-empty-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  color: #6ba9d6;
+  background: rgba(11, 31, 49, 0.52);
+}
+
+.risk-empty strong {
+  max-width: 420px;
+  font-size: 13px;
+}
+
+.risk-empty > span:not(.risk-empty-icon) {
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.risk-empty button {
+  margin-top: 7px;
+  padding: 7px 10px;
+  border: 1px solid rgba(89, 144, 196, 0.18);
+  border-radius: 8px;
+  color: #80bcf4;
+  background: rgba(8, 24, 39, 0.48);
+}
+
+.risk-empty button:hover {
+  border-color: rgba(89, 144, 196, 0.34);
+  background: rgba(12, 34, 54, 0.7);
+}
+
+.risk-threat-list:empty {
+  min-height: 300px;
+}
+
+.risk-detail-backdrop {
+  background: rgba(1, 5, 9, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+@media (max-width: 820px) {
+  .risk-status-group {
+    justify-items: start;
+    max-width: 100%;
+  }
+
+  .risk-screening-error {
+    text-align: left;
+  }
+
+  .risk-error-state,
+  .risk-loading-state {
+    grid-template-columns: auto 1fr;
+  }
+
+  .risk-error-state button {
+    grid-column: 2;
+    width: max-content;
+  }
+}
+
+@media (max-width: 560px) {
+  .risk-error-state,
+  .risk-loading-state {
+    padding: 13px;
+    gap: 10px;
+  }
+
+  .risk-error-state button {
+    width: 100%;
+  }
+
+  .risk-empty {
+    min-height: 270px;
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+}

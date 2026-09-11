@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   BarChart3,
+  Bell,
   Database,
   Gauge,
   Orbit,
@@ -14,6 +15,7 @@ const nav = [
   ['track', 'Satellites', Orbit],
   ['risk', 'Collision Risk', AlertTriangle],
   ['simulation', 'Simulation', BarChart3],
+  ['alerts', 'Alerts', Bell],
   ['data-science', 'Analytics', Database],
   ['preferences', 'Settings', Settings2],
 ]

@@ -4,6 +4,7 @@ import {
   Orbit,
   Satellite,
   Search,
+  RefreshCw,
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
@@ -40,6 +41,7 @@ export default function TrackPage() {
     objects,
     objectsStatus,
     objectsError,
+    refreshObjects,
   } = useMissionContext()
 
   const [search, setSearch] = useState('')
@@ -85,22 +87,35 @@ export default function TrackPage() {
           </p>
         </div>
 
-        <span>
-          <i
-            className={
-              objectsStatus === 'connected'
-                ? ''
-                : objectsStatus === 'loading'
-                  ? 'loading'
-                  : 'offline'
-            }
-          />
-          {objectsStatus === 'connected'
-            ? `${objects.length} objects · Backend connected`
-            : objectsStatus === 'loading'
-              ? 'Loading orbital catalogue'
-              : 'Backend unavailable'}
-        </span>
+        <div className="registry-heading-status">
+          <span>
+            <i
+              className={
+                objectsStatus === 'connected'
+                  ? ''
+                  : objectsStatus === 'loading'
+                    ? 'loading'
+                    : 'offline'
+              }
+            />
+            {objectsStatus === 'connected'
+              ? `${objects.length} objects · Live catalogue`
+              : objectsStatus === 'loading'
+                ? 'Connecting to orbital catalogue'
+                : 'Orbital catalogue unavailable'}
+          </span>
+
+          {objectsStatus === 'error' && (
+            <button
+              type="button"
+              className="registry-retry"
+              onClick={refreshObjects}
+            >
+              <RefreshCw size={14} />
+              Retry
+            </button>
+          )}
+        </div>
       </header>
 
       <div className={`registry-stage ${selected ? 'has-selection' : ''}`}>
@@ -129,11 +144,32 @@ export default function TrackPage() {
 
           {objectsStatus === 'error' && (
             <div className="registry-system-state" role="alert">
-              <strong>Unable to load the orbital catalogue.</strong>
-              <span>
-                {objectsError?.message ||
-                  'Check that the SpaceGuard backend is running.'}
-              </span>
+              <div className="registry-state-icon" aria-hidden="true">
+                <Satellite size={18} />
+              </div>
+
+              <div className="registry-state-copy">
+                <span className="registry-state-kicker">DATA UNAVAILABLE</span>
+                <strong>Orbital catalogue is not connected</strong>
+                <span>
+                  This workspace only displays objects returned by the
+                  mission backend. No substitute catalogue is shown here.
+                </span>
+
+                <small>
+                  {objectsError?.message ||
+                    'Reconnect the SpaceGuard backend to populate tracked objects.'}
+                </small>
+              </div>
+
+              <button
+                type="button"
+                className="registry-inline-retry"
+                onClick={refreshObjects}
+              >
+                <RefreshCw size={14} />
+                Retry catalogue
+              </button>
             </div>
           )}
 
@@ -151,15 +187,36 @@ export default function TrackPage() {
             )}
 
             {objectsStatus !== 'loading' &&
-              !objects.length && (
-                <p className="registry-empty">
-                  {search.trim()
-                    ? 'No objects match the current search.'
-                    : 'No orbital objects are available from the backend.'}
-                </p>
+              !objects.length &&
+              objectsStatus !== 'error' && (
+                <div className="registry-empty" role="status">
+                  <div className="registry-empty-icon" aria-hidden="true">
+                    <Satellite size={20} />
+                  </div>
+                  <span className="registry-state-kicker">CATALOGUE READY</span>
+                  <strong>Waiting for orbital objects</strong>
+                  <span>
+                    The registry will populate from the connected mission
+                    data service as soon as objects are available.
+                  </span>
+                </div>
               )}
 
             {objectsStatus !== 'loading' &&
+              objectsStatus !== 'error' &&
+              objects.length > 0 &&
+              !filteredObjects.length && (
+                <div className="registry-empty registry-empty--search" role="status">
+                  <div className="registry-empty-icon" aria-hidden="true">
+                    <Search size={18} />
+                  </div>
+                  <strong>No matching objects</strong>
+                  <span>Try a different object name or catalogue identifier.</span>
+                </div>
+              )}
+
+            {objectsStatus !== 'loading' &&
+              objectsStatus !== 'error' &&
               filteredObjects.map((object) => (
                 <button
                   key={object.id}

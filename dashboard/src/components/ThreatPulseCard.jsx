@@ -1,4 +1,4 @@
-import { ArrowRight, Clock3, ShieldAlert, Satellite, Zap } from 'lucide-react'
+import { ArrowRight, Clock3, RefreshCw, ShieldAlert, Satellite, Zap } from 'lucide-react'
 import { formatTimeUntilTca } from '../services/conjunctionApi'
 
 function formatNumber(value, digits = 1) {
@@ -57,6 +57,7 @@ export default function ThreatPulseCard({
   completed = 0,
   attempted = 0,
   onInspect = () => {},
+  onRetry = () => {},
 }) {
   const topThreat = threats[0] ?? null
 
@@ -65,7 +66,7 @@ export default function ThreatPulseCard({
       <div className="threat-pulse-head">
         <div>
           <span className="eyebrow">PRIORITY MONITOR</span>
-          <h2>Top threat</h2>
+          <h2>Threat posture</h2>
         </div>
         <ThreatStatus
           status={status}
@@ -94,7 +95,7 @@ export default function ThreatPulseCard({
               {topThreat.objectAName || topThreat.objectA} × {topThreat.objectBName || topThreat.objectB}
             </strong>
 
-            <span className="threat-pulse-source">Backend conjunction result</span>
+            <span className="threat-pulse-source">Real backend conjunction result</span>
           </button>
 
           <div className="threat-pulse-metrics">
@@ -116,21 +117,30 @@ export default function ThreatPulseCard({
           </div>
         </>
       ) : (
-        <div className="threat-pulse-empty" role="status">
+        <div className="threat-pulse-empty" role="status" data-state={status}>
           {status === 'loading' ? (
             <>
-              <strong>Screening conjunctions</strong>
-              <span>Real orbital objects are being checked by the backend.</span>
+              <span className="threat-empty-kicker">LIVE SCREENING</span>
+              <strong>Screening for conjunctions</strong>
+              <span>Real orbital objects are being checked by the mission backend.</span>
+              <div className="threat-empty-progress" aria-hidden="true"><i style={{ width: `${attempted ? Math.min(100, (completed / attempted) * 100) : 0}%` }} /></div>
+              <small>{completed} of {attempted} screening tasks complete</small>
             </>
           ) : status === 'error' ? (
             <>
-              <strong>Threat feed unavailable</strong>
-              <span>Open Risk to retry screening or inspect the backend status.</span>
+              <span className="threat-empty-kicker threat-empty-kicker--error">FEED INTERRUPTED</span>
+              <strong>Threat screening is unavailable</strong>
+              <span>No conjunctions will be shown until the orbital data feed reconnects.</span>
+              <button type="button" className="threat-empty-retry" onClick={onRetry}>
+                <RefreshCw size={14} />
+                Retry screening
+              </button>
             </>
           ) : (
             <>
-              <strong>No screened threat yet</strong>
-              <span>The dashboard will surface the highest-ranked conjunction here.</span>
+              <span className="threat-empty-kicker">MONITOR READY</span>
+              <strong>Awaiting screened conjunctions</strong>
+              <span>The priority monitor will surface the highest-ranked real conjunction here.</span>
             </>
           )}
         </div>
@@ -142,7 +152,7 @@ export default function ThreatPulseCard({
         onClick={() => onInspect(topThreat)}
         disabled={!topThreat && status !== 'error'}
       >
-        {topThreat ? 'Open threat investigation' : 'Open risk monitor'}
+        {topThreat ? 'Open threat investigation' : status === 'error' ? 'Open risk monitor' : 'Risk monitor'}
         <ArrowRight size={15} />
       </button>
     </aside>

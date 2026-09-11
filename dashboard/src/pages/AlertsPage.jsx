@@ -5,135 +5,99 @@ import {
   ChevronRight,
   Clock3,
   Info,
+  RefreshCw,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { mockTimeline } from '../data/mockMissionData'
+import { useMissionContext } from '../layouts/useMissionContext'
+import { formatTca, formatTimeUntilTca } from '../services/conjunctionApi'
 import '../styles/alerts.css'
 
-// Mock alert events for the prototype.
-const alertEvents = [
-  {
-    id: 'alert-1',
-    time: '14:08',
-    level: 'CRITICAL',
-    title: 'Critical conjunction promoted',
-    detail: 'AURORA-7 / DEBRIS-4812',
-    description:
-      'Conjunction risk exceeded the critical monitoring threshold.',
-    source: 'RISK MONITOR',
-  },
-  {
-    id: 'alert-2',
-    time: '13:52',
-    level: 'HIGH',
-    title: 'High-risk threshold crossed',
-    detail: 'NOVA-3 / OBJECT-9274',
-    description:
-      'Predicted conjunction requires increased monitoring.',
-    source: 'RISK MONITOR',
-  },
-  {
-    id: 'alert-3',
-    time: '13:56',
-    level: 'INFO',
-    title: 'TLE snapshot refreshed',
-    detail: 'Mock orbital feed',
-    description:
-      'Latest orbital tracking data has been loaded.',
-    source: 'TRACKING SYSTEM',
-  },
-  {
-    id: 'alert-4',
-    time: '14:14',
-    level: 'INFO',
-    title: 'Screening cycle completed',
-    detail: '142 monitored objects scanned',
-    description:
-      'Routine conjunction screening cycle completed successfully.',
-    source: 'SCREENING ENGINE',
-  },
-]
+const FILTERS = ['ALL', 'HIGH', 'MEDIUM', 'LOW']
 
-const filters = ['ALL', 'CRITICAL', 'HIGH', 'INFO']
+function buildAlerts(threats) {
+  return threats.map((threat) => ({
+    ...threat,
+    time: formatTca(threat.tca),
+    title: `${threat.riskLevel} conjunction detected`,
+    detail: `${threat.objectAName || threat.objectA} / ${threat.objectBName || threat.objectB}`,
+    source: 'RISK MONITOR',
+  }))
+}
 
 export default function AlertsPage() {
+  const {
+    threats,
+    threatsStatus,
+    threatsError,
+    refreshThreats,
+  } = useMissionContext()
+
   const [filter, setFilter] = useState('ALL')
-  const [selectedAlert, setSelectedAlert] = useState(
-    alertEvents[0],
-  )
+  const [selectedAlertId, setSelectedAlertId] = useState(null)
   const [acknowledged, setAcknowledged] = useState([])
 
-  // Apply the selected alert filter.
+  const alerts = useMemo(() => buildAlerts(threats), [threats])
   const filteredAlerts = useMemo(() => {
-    if (filter === 'ALL') {
-      return alertEvents
-    }
+    if (filter === 'ALL') return alerts
+    return alerts.filter((alert) => alert.riskLevel === filter)
+  }, [alerts, filter])
 
-    return alertEvents.filter(
-      (alert) => alert.level === filter,
-    )
-  }, [filter])
+  const selectedAlert =
+    alerts.find((alert) => alert.id === selectedAlertId) ?? null
 
-  // Count alerts that still need attention.
-  const activeCount = alertEvents.filter(
+  const activeCount = alerts.filter(
     (alert) => !acknowledged.includes(alert.id),
   ).length
 
-  // Acknowledge the selected alert.
-  const acknowledgeAlert = () => {
-    if (!acknowledged.includes(selectedAlert.id)) {
-      setAcknowledged((current) => [
-        ...current,
-        selectedAlert.id,
-      ])
-    }
-  }
-
-  // Acknowledge every alert at once.
-  const acknowledgeAll = () => {
-    setAcknowledged(
-      alertEvents.map((alert) => alert.id),
+  const acknowledge = (id) => {
+    if (!id) return
+    setAcknowledged((current) =>
+      current.includes(id) ? current : [...current, id],
     )
   }
 
+  const acknowledgeAll = () => {
+    setAcknowledged(alerts.map((alert) => alert.id))
+  }
+
+  const handleRetry = () => {
+    refreshThreats?.()
+  }
+
+  const stateLabel =
+    threatsStatus === 'loading'
+      ? 'LOADING ALERT FEED'
+      : threatsStatus === 'error'
+        ? 'ALERT FEED UNAVAILABLE'
+        : alerts.length
+          ? `${activeCount} ACTIVE ALERTS`
+          : 'AWAITING SCREENING'
+
   return (
     <section className="alerts-page">
-
-      {/* Page header */}
-      <div className="alerts-header">
+      <header className="alerts-header">
         <div>
-          <span className="eyebrow">
-            ALERT MANAGEMENT
-          </span>
-
+          <span className="eyebrow">ALERT MANAGEMENT</span>
           <h1>Alert Center</h1>
-
           <p>
-            Review system notifications, mission events,
-            and alerts requiring operator attention.
+            Review real conjunction events returned by the mission screening service.
           </p>
         </div>
 
-        <div className="alerts-status">
+        <div className="alerts-status" data-state={threatsStatus}>
           <Bell size={15} />
-          {activeCount} ACTIVE ALERTS
+          <span>{stateLabel}</span>
         </div>
-      </div>
+      </header>
 
-      {/* Alert command console */}
-      <div className="alerts-console">
-
-        {/* Filters and bulk actions */}
+      <section className="alerts-console" aria-label="Alert management console">
         <div className="alerts-toolbar">
-
-          <div className="alert-filters">
-            {filters.map((item) => (
+          <div className="alert-filters" role="group" aria-label="Filter alerts">
+            {FILTERS.map((item) => (
               <button
                 key={item}
                 type="button"
-                className={
-                  filter === item ? 'active' : ''
-                }
+                className={filter === item ? 'active' : ''}
                 onClick={() => setFilter(item)}
               >
                 {item}
@@ -145,214 +109,153 @@ export default function AlertsPage() {
             type="button"
             className="ack-all-button"
             onClick={acknowledgeAll}
+            disabled={!alerts.length || activeCount === 0}
           >
             <Check size={14} />
             ACKNOWLEDGE ALL
           </button>
-
         </div>
 
-        {/* Main alert queue */}
-        <div className="alert-queue">
-
-          <div className="alert-queue-header">
+        {threatsStatus === 'loading' && (
+          <div className="alert-state-card loading" role="status">
+            <RefreshCw size={18} className="spinning" />
             <div>
-              <span className="eyebrow">
-                ALERT QUEUE
-              </span>
+              <span className="eyebrow">LIVE SCREENING</span>
+              <strong>Loading real alert data</strong>
+              <p>Waiting for the conjunction screening service to return results.</p>
+            </div>
+          </div>
+        )}
 
-              <h2>Operational notifications</h2>
+        {threatsStatus === 'error' && (
+          <div className="alert-state-card error" role="alert">
+            <AlertTriangle size={18} />
+            <div>
+              <span className="eyebrow">DATA UNAVAILABLE</span>
+              <strong>The alert feed is not connected</strong>
+              <p>{threatsError?.message || 'No real conjunction alert data is currently available.'}</p>
+            </div>
+            <button type="button" onClick={handleRetry}>
+              <RefreshCw size={14} />
+              Retry feed
+            </button>
+          </div>
+        )}
+
+        {threatsStatus !== 'loading' && threatsStatus !== 'error' && !alerts.length && (
+          <div className="alert-state-card empty" role="status">
+            <Info size={18} />
+            <div>
+              <span className="eyebrow">MONITOR READY</span>
+              <strong>No conjunction alerts available</strong>
+              <p>Alerts appear here when the screening service returns a real conjunction result.</p>
+            </div>
+            <button type="button" onClick={handleRetry}>
+              <RefreshCw size={14} />
+              Refresh feed
+            </button>
+          </div>
+        )}
+
+        {filteredAlerts.length > 0 && (
+          <div className="alert-queue">
+            <div className="alert-queue-header">
+              <div>
+                <span className="eyebrow">ALERT QUEUE</span>
+                <h2>Operational notifications</h2>
+              </div>
+              <span>{filteredAlerts.length} EVENTS</span>
             </div>
 
-            <span>
-              {filteredAlerts.length} EVENTS
+            {filteredAlerts.map((alert) => {
+              const isAcknowledged = acknowledged.includes(alert.id)
+              const isSelected = selectedAlertId === alert.id
+
+              return (
+                <button
+                  key={alert.id}
+                  type="button"
+                  className={`alert-event ${alert.riskLevel.toLowerCase()} ${isSelected ? 'selected' : ''} ${isAcknowledged ? 'acknowledged' : ''}`}
+                  onClick={() => setSelectedAlertId(alert.id)}
+                >
+                  <span className="event-severity">
+                    <AlertTriangle size={16} />
+                  </span>
+                  <span className="event-time">{alert.time}</span>
+                  <span className="event-content">
+                    <strong>{alert.title}</strong>
+                    <small>{alert.detail}</small>
+                    <span>{alert.riskReason || 'Backend conjunction result requires operator review.'}</span>
+                  </span>
+                  <span className="event-source">{alert.source}</span>
+                  <span className="event-status">
+                    {isAcknowledged ? (
+                      <>
+                        <Check size={13} /> ACK
+                      </>
+                    ) : (
+                      'NEW'
+                    )}
+                  </span>
+                  <ChevronRight size={16} />
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </section>
+
+      {selectedAlert && (
+        <aside className={`selected-alert-bar ${selectedAlert.riskLevel.toLowerCase()}`}>
+          <div className="selected-alert-indicator">
+            <AlertTriangle size={16} />
+          </div>
+
+          <div className="selected-alert-content">
+            <span className="eyebrow">SELECTED ALERT</span>
+            <strong>{selectedAlert.title}</strong>
+            <small>
+              {selectedAlert.detail} · {selectedAlert.source}
+            </small>
+          </div>
+
+          <div className="selected-alert-meta">
+            <span>{formatTimeUntilTca(selectedAlert.tca)}</span>
+            <span className={`alert-level ${selectedAlert.riskLevel.toLowerCase()}`}>
+              {selectedAlert.riskLevel}
             </span>
           </div>
 
-          {filteredAlerts.map((alert) => {
-            const isAcknowledged =
-              acknowledged.includes(alert.id)
-
-            const isSelected =
-              selectedAlert.id === alert.id
-
-            return (
-              <button
-                key={alert.id}
-                type="button"
-                className={`alert-event ${
-                  alert.level.toLowerCase()
-                } ${
-                  isSelected ? 'selected' : ''
-                } ${
-                  isAcknowledged
-                    ? 'acknowledged'
-                    : ''
-                }`}
-                onClick={() => {
-                  setSelectedAlert(alert)
-                }}
-              >
-
-                {/* Severity icon */}
-                <span className="event-severity">
-                  {alert.level === 'INFO' ? (
-                    <Info size={16} />
-                  ) : (
-                    <AlertTriangle size={16} />
-                  )}
-                </span>
-
-                {/* Timestamp */}
-                <span className="event-time">
-                  {alert.time}
-                </span>
-
-                {/* Alert information */}
-                <span className="event-content">
-                  <strong>
-                    {alert.title}
-                  </strong>
-
-                  <small>
-                    {alert.detail}
-                  </small>
-
-                  <span>
-                    {alert.description}
-                  </span>
-                </span>
-
-                {/* Alert source */}
-                <span className="event-source">
-                  {alert.source}
-                </span>
-
-                {/* Alert state */}
-                <span className="event-status">
-                  {isAcknowledged ? (
-                    <>
-                      <Check size={13} />
-                      ACK
-                    </>
-                  ) : (
-                    'NEW'
-                  )}
-                </span>
-
-                <ChevronRight size={16} />
-
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Selected alert action strip */}
-      <div
-        className={`selected-alert-bar ${
-          selectedAlert.level.toLowerCase()
-        }`}
-      >
-        <div className="selected-alert-indicator">
-          {selectedAlert.level === 'INFO' ? (
-            <Info size={16} />
-          ) : (
-            <AlertTriangle size={16} />
-          )}
-        </div>
-
-        <div className="selected-alert-content">
-          <span className="eyebrow">
-            SELECTED ALERT
-          </span>
-
-          <strong>
-            {selectedAlert.title}
-          </strong>
-
-          <small>
-            {selectedAlert.detail}
-            {' • '}
-            {selectedAlert.source}
-          </small>
-        </div>
-
-        <div className="selected-alert-meta">
-          <span>
-            {selectedAlert.time}
-          </span>
-
-          <span
-            className={`alert-level ${
-              selectedAlert.level.toLowerCase()
-            }`}
+          <button
+            type="button"
+            className="acknowledge-button"
+            disabled={acknowledged.includes(selectedAlert.id)}
+            onClick={() => acknowledge(selectedAlert.id)}
           >
-            {selectedAlert.level}
-          </span>
-        </div>
+            <Check size={14} />
+            {acknowledged.includes(selectedAlert.id) ? 'ACKNOWLEDGED' : 'ACKNOWLEDGE'}
+          </button>
+        </aside>
+      )}
 
-        <button
-          type="button"
-          className="acknowledge-button"
-          disabled={acknowledged.includes(
-            selectedAlert.id,
-          )}
-          onClick={acknowledgeAlert}
-        >
-          <Check size={14} />
-
-          {acknowledged.includes(
-            selectedAlert.id,
-          )
-            ? 'ACKNOWLEDGED'
-            : 'ACKNOWLEDGE'}
-        </button>
-      </div>
-
-      {/* Mission event history */}
-      <div className="alerts-timeline">
-
+      <section className="alerts-timeline">
         <div className="alerts-section-header">
           <div>
-            <span className="eyebrow">
-              MISSION ACTIVITY
-            </span>
-
+            <span className="eyebrow">MISSION ACTIVITY</span>
             <h2>System event timeline</h2>
           </div>
-
           <Clock3 size={17} />
         </div>
 
-        <div className="timeline-list">
-          {mockTimeline.map((event) => (
-            <div
-              className="alert-timeline-event"
-              key={event.time}
-            >
-              <span
-                className={`timeline-dot ${event.tone}`}
-              />
-
-              <time>
-                {event.time}
-              </time>
-
-              <div>
-                <strong>
-                  {event.title}
-                </strong>
-
-                <small>
-                  {event.detail}
-                </small>
-              </div>
-            </div>
-          ))}
+        <div className="alert-state-card empty timeline-empty">
+          <Clock3 size={18} />
+          <div>
+            <span className="eyebrow">NOT EXPOSED BY API</span>
+            <strong>Event history is unavailable</strong>
+            <p>The current mission API exposes conjunction results, but not a separate historical event stream.</p>
+          </div>
         </div>
-      </div>
-
+      </section>
     </section>
   )
 }

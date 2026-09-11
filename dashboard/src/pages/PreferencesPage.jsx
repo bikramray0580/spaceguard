@@ -525,8 +525,8 @@ function MonitoringSettings({
         />
         <AdvancedRow
           label="Data source"
-          description="Current monitoring views use the local prototype dataset."
-          value="Mock dataset"
+          description="Monitoring views use the connected SpaceGuard backend when available."
+          value="Backend API"
         />
       </AdvancedSettings>
     </SettingGroup>
@@ -589,7 +589,7 @@ function SystemSettings({ advancedOpen, onAdvancedToggle, onReset }) {
         icon={<Database size={15} />}
         label="Data source"
         description="Current analytical and monitoring views."
-        value="Prototype dataset"
+        value="Backend API"
       />
 
       <InfoRow

@@ -1,4 +1,61 @@
-import { Activity, Crosshair, Radar, RefreshCw, ShieldAlert } from 'lucide-react'
-import { mockMissionMeta } from '../data/mockMissionData'
-const severity = [['Critical', 1, 'critical'], ['High', 1, 'high'], ['Moderate', 2, 'moderate'], ['Low', 3, 'low']]
-export default function IntelPanel({ selectedThreat }) { return <aside className="intel-panel"><div className="panel-title"><div><span className="eyebrow">LIVE INTELLIGENCE</span><h2>Risk posture</h2></div><Radar size={19} /></div><div className="stat-grid"><div className="stat-card"><span><Activity size={15} /> OBJECTS</span><strong>{mockMissionMeta.monitoredObjects}</strong><small>actively monitored</small></div><div className="stat-card"><span><ShieldAlert size={15} /> EVENTS</span><strong>{mockMissionMeta.conjunctions}</strong><small>next 24 hours</small></div><div className="stat-card danger"><span><Crosshair size={15} /> HIGH RISK</span><strong>{mockMissionMeta.highRisk}</strong><small>requires review</small></div><div className="stat-card"><span><RefreshCw size={15} /> FRESHNESS</span><strong>{mockMissionMeta.freshness}</strong><small>mock data age</small></div></div><div className="exposure-card"><div><span className="eyebrow">CURRENT EXPOSURE</span><strong>{mockMissionMeta.exposure}</strong></div><span className="exposure-indicator" /></div><div className="severity-list"><span className="eyebrow">CONJUNCTION DISTRIBUTION</span>{severity.map(([label, value, tone]) => <div className="severity-row" key={label}><span><i className={`severity-dot ${tone}`} />{label}</span><strong>{value}</strong><div className="severity-track"><i className={tone} style={{ width: `${value * 30}%` }} /></div></div>)}</div><div className="threat-focus"><span className="eyebrow">SELECTED THREAT</span><div className="focus-header"><span className={`risk-pill ${selectedThreat.level.toLowerCase()}`}>{selectedThreat.level}</span><span>{selectedThreat.window}</span></div><h3>{selectedThreat.objectA}<em>×</em>{selectedThreat.objectB}</h3><div className="focus-metrics"><span>MISS DISTANCE <b>{selectedThreat.distance}</b></span><span>REL. VELOCITY <b>{selectedThreat.velocity}</b></span></div><p>Mock data only — no backend integration.</p></div></aside> }
+import { Activity, Crosshair, Radar, ShieldAlert } from 'lucide-react'
+
+export default function IntelPanel({ selectedThreat, objects = [], threats = [] }) {
+  const highRisk = threats.filter((threat) => threat.riskLevel === 'HIGH').length
+
+  return (
+    <aside className="intel-panel">
+      <div className="panel-title">
+        <div>
+          <span className="eyebrow">LIVE INTELLIGENCE</span>
+          <h2>Risk posture</h2>
+        </div>
+        <Radar size={19} />
+      </div>
+
+      <div className="stat-grid">
+        <div className="stat-card">
+          <span><Activity size={15} /> OBJECTS</span>
+          <strong>{objects.length || '—'}</strong>
+          <small>{objects.length ? 'from backend catalogue' : 'unavailable'}</small>
+        </div>
+        <div className="stat-card">
+          <span><ShieldAlert size={15} /> EVENTS</span>
+          <strong>{threats.length || '—'}</strong>
+          <small>{threats.length ? 'screened conjunctions' : 'unavailable'}</small>
+        </div>
+        <div className="stat-card danger">
+          <span><Crosshair size={15} /> HIGH RISK</span>
+          <strong>{threats.length ? highRisk : '—'}</strong>
+          <small>{threats.length ? 'backend classification' : 'unavailable'}</small>
+        </div>
+      </div>
+
+      {selectedThreat ? (
+        <div className="threat-focus">
+          <span className="eyebrow">SELECTED THREAT</span>
+          <div className="focus-header">
+            <span className={`risk-pill ${selectedThreat.riskLevel.toLowerCase()}`}>
+              {selectedThreat.riskLevel}
+            </span>
+            <span>{selectedThreat.window}</span>
+          </div>
+          <h3>
+            {selectedThreat.objectAName || selectedThreat.objectA}
+            <em>×</em>
+            {selectedThreat.objectBName || selectedThreat.objectB}
+          </h3>
+          <div className="focus-metrics">
+            <span>MISS DISTANCE <b>{selectedThreat.distance}</b></span>
+            <span>REL. VELOCITY <b>{selectedThreat.velocity}</b></span>
+          </div>
+          <p>{selectedThreat.riskReason}</p>
+        </div>
+      ) : (
+        <div className="context-empty-state">
+          No backend-screened conjunction is currently selected.
+        </div>
+      )}
+    </aside>
+  )
+}

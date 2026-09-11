@@ -1,4 +1,6 @@
+import { RefreshCw } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import MissionViewport from '../components/MissionViewport'
 import ContextPanel from '../components/ContextPanel'
 import FeatureDock from '../components/FeatureDock'
@@ -6,14 +8,12 @@ import ViewControls from '../components/ViewControls'
 import ThreatPulseCard from '../components/ThreatPulseCard'
 import { useMissionContext } from '../layouts/useMissionContext'
 import { useOrbitalData } from '../hooks/useOrbitalData'
-import { runMockSimulation } from '../services/simulationService'
 
 export default function DashboardPage() {
   const {
     selectedThreat,
     setSelectedThreat,
     simulation,
-    setSimulation,
     objects,
     threats,
     threatsStatus,
@@ -47,44 +47,46 @@ export default function DashboardPage() {
     setActivePanel('track')
   }
 
-  const handleSimulation = async () => {
-    if (simulation.active) return
+  const navigate = useNavigate()
 
-    if (!threats.length) return
+  const handleSimulation = () => {
+    if (!selectedThreat) return
+    navigate(`/simulation?threat=${encodeURIComponent(selectedThreat.id)}`)
+  }
 
-    setSimulation({
-      active: true,
-      progress: 0,
-      result: null,
-    })
-
-    try {
-      const result = await runMockSimulation(
-        selectedThreat ?? threats[0],
-        (progress) =>
-          setSimulation((current) => ({
-            ...current,
-            progress,
-          })),
-      )
-
-      setSimulation({
-        active: false,
-        progress: 100,
-        result,
-      })
-    } catch (error) {
-      console.error('Simulation failed:', error)
-      setSimulation({
-        active: false,
-        progress: 0,
-        result: null,
-      })
-    }
+  const orbitStatus = orbitalData.status
+  const isOrbitUnavailable = orbitStatus === 'error'
+  const isOrbitLoading = orbitStatus === 'loading'
+  const retryMissionData = () => {
+    if (typeof refreshThreats === 'function') refreshThreats()
   }
 
   return (
     <section className="dashboard-workspace">
+      <div className="dashboard-mission-label" aria-live="polite">
+        <div>
+          <span className="eyebrow">MISSION VIEW</span>
+          <strong>Orbital awareness workspace</strong>
+        </div>
+        <span className="dashboard-feed-chip" data-state={orbitStatus}>
+          <i />
+          {isOrbitUnavailable ? 'DATA UNAVAILABLE' : isOrbitLoading ? 'CONNECTING FEED' : orbitStatus === 'connected' ? 'LIVE ORBIT FEED' : 'AWAITING FEED'}
+        </span>
+      </div>
+
+      {isOrbitUnavailable && (
+        <div className="dashboard-data-banner" role="status">
+          <div>
+            <strong>Orbital data is not connected</strong>
+            <span>Earth remains available as a spatial reference. Live objects and conjunctions will appear when the mission feed reconnects.</span>
+          </div>
+          <button type="button" onClick={retryMissionData}>
+            <RefreshCw size={14} />
+            Retry connection
+          </button>
+        </div>
+      )}
+
       <MissionViewport
         selectedThreat={selectedThreat}
         selectedObject={selectedObject}
@@ -100,6 +102,7 @@ export default function DashboardPage() {
         completed={threatsCompleted}
         attempted={threatsAttempted}
         onInspect={inspectThreat}
+        onRetry={refreshThreats}
       />
 
       <ContextPanel

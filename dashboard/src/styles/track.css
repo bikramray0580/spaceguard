@@ -210,3 +210,27 @@
 .registry-page-heading>span i.offline{background:#ef7167;box-shadow:0 0 8px rgba(239,113,103,.24)}
 @keyframes registry-pulse{50%{opacity:.35;transform:scale(.8)}}
 @media(max-width:700px){.registry-source{display:none}.registry-row{grid-template-columns:minmax(150px,1fr) 100px 16px}}
+
+
+/* Track page polish: honest backend states, calmer registry chrome, clearer retry affordances. */
+.registry-heading-status{display:flex;align-items:center;gap:10px}
+.registry-heading-status>span{display:flex;align-items:center;gap:8px;color:#8da0b2;font-size:11px;letter-spacing:.04em}
+.registry-retry{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid rgba(99,153,204,.22);border-radius:8px;color:#8fc3fb;background:rgba(10,31,52,.48);font:10px inherit;cursor:pointer}
+.registry-retry:hover,.registry-inline-retry:hover{color:#e5f0fb;border-color:rgba(99,153,204,.4);background:rgba(16,47,76,.62)}
+.registry-system-state{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:13px;margin:15px 0;padding:15px 16px;border:1px solid rgba(239,113,103,.2);border-radius:12px;color:#cfdbe8;background:linear-gradient(100deg,rgba(63,20,23,.18),rgba(10,20,31,.34))}
+.registry-state-icon,.registry-empty-icon{display:grid;place-items:center;width:38px;height:38px;border:1px solid rgba(105,151,198,.2);border-radius:11px;color:#7fb6ed;background:rgba(16,48,79,.24)}
+.registry-state-copy{display:grid;gap:4px;min-width:0}
+.registry-state-copy strong{font-size:12px;font-weight:500}
+.registry-state-copy>span:not(.registry-state-kicker){color:#8f9fb0;font-size:10px;line-height:1.5}
+.registry-state-copy small{color:#6f8297;font-size:9px;line-height:1.5}
+.registry-state-kicker{color:#6c849c;font:8px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em}
+.registry-inline-retry{display:inline-flex;align-items:center;gap:7px;justify-content:center;padding:8px 10px;border:1px solid rgba(239,113,103,.18);border-radius:8px;color:#ffad9f;background:rgba(69,24,25,.18);font:10px inherit;cursor:pointer;white-space:nowrap}
+.registry-empty{display:grid;justify-items:center;gap:8px;padding:54px 24px;color:#8193a8;text-align:center}
+.registry-empty strong{color:#cad8e5;font-size:13px;font-weight:500}
+.registry-empty>span:last-child{max-width:400px;color:#708397;font-size:10px;line-height:1.55}
+.registry-empty--search{min-height:220px}
+@media(max-width:700px){
+  .registry-heading-status{width:100%;justify-content:space-between}
+  .registry-system-state{grid-template-columns:auto minmax(0,1fr)}
+  .registry-inline-retry{grid-column:1 / -1;width:100%}
+}

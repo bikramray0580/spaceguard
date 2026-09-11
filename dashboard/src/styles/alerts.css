@@ -538,3 +538,116 @@
     width: 100%;
   }
 }   
+.alert-empty-state {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid rgba(92, 156, 201, 0.16);
+  border-radius: 16px;
+  background: rgba(8, 18, 30, 0.58);
+}
+
+.alert-empty-state.error {
+  border-color: rgba(255, 112, 112, 0.28);
+  background: rgba(50, 15, 20, 0.18);
+}
+
+.alert-empty-state strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.alert-empty-state p {
+  margin: 0;
+  color: var(--text-muted, #8fa4ba);
+}
+
+.alert-empty-state button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+
+/* Alerts polish */
+.alerts-header {
+  gap: 24px;
+}
+.alerts-status {
+  min-width: 190px;
+  justify-content: center;
+  border-radius: 10px;
+}
+.alerts-status[data-state='error'] {
+  color: #ff9a8a;
+  border-color: rgba(255, 112, 96, .22);
+  background: rgba(45, 16, 20, .42);
+}
+.alerts-status[data-state='loading'] {
+  color: #8fbbe8;
+}
+.alerts-status[data-state='connected'] {
+  color: #7ad9ad;
+  border-color: rgba(90, 196, 144, .22);
+  background: rgba(9, 30, 23, .42);
+}
+.alert-state-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 118px;
+  padding: 18px;
+  border: 1px solid rgba(92, 156, 201, .16);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(7, 20, 31, .84), rgba(5, 15, 24, .7));
+}
+.alert-state-card.error {
+  border-color: rgba(255, 112, 96, .22);
+  background: linear-gradient(180deg, rgba(45, 15, 19, .38), rgba(20, 12, 16, .36));
+}
+.alert-state-card > svg { color: #77bdea; }
+.alert-state-card.error > svg { color: #ff8977; }
+.alert-state-card strong {
+  display: block;
+  margin: 4px 0 5px;
+  color: #dce9f4;
+  font-size: 12px;
+}
+.alert-state-card p {
+  margin: 0;
+  color: #72879b;
+  font-size: 9px;
+  line-height: 1.5;
+}
+.alert-state-card button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid rgba(96, 159, 220, .3);
+  border-radius: 8px;
+  color: #8dc4f1;
+  background: rgba(11, 30, 49, .54);
+  font-size: 9px;
+  cursor: pointer;
+}
+.alert-state-card button:hover {
+  color: #e1efff;
+  border-color: rgba(96, 159, 220, .48);
+  background: rgba(16, 43, 69, .7);
+}
+.timeline-empty {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  background: transparent;
+}
+@media (max-width: 720px) {
+  .alert-state-card { grid-template-columns: auto 1fr; }
+  .alert-state-card button { grid-column: 2; justify-self: start; }
+  .alerts-status { width: 100%; }
+}

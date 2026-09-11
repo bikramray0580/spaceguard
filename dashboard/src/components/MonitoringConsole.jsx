@@ -3,7 +3,6 @@ import {
   Clock3,
   Filter,
   ListFilter,} from 'lucide-react'
-import { mockTimeline } from '../data/mockMissionData'
 
 export default function MonitoringConsole({
   threats,
@@ -46,7 +45,7 @@ export default function MonitoringConsole({
               type="button"
               onClick={() => onSelect(threat)}
               className={`table-row threat-row ${
-                selectedThreat.id === threat.id ? 'selected' : ''
+                selectedThreat?.id === threat.id ? 'selected' : ''
               }`}
             >
               <span className="object-pair">
@@ -74,22 +73,11 @@ export default function MonitoringConsole({
         <div className="event-timeline">
           <span className="eyebrow">EVENT TIMELINE</span>
 
-          {mockTimeline.map((event) => (
-            <div className="timeline-event" key={event.time}>
-              <span className={`timeline-pin ${event.tone}`} />
-
-              <time>{event.time}</time>
-
-              <strong>{event.title}</strong>
-
-              <small>{event.detail}</small>
-            </div>
-          ))}
-
-          <button className="timeline-button">
-            <Clock3 size={15} />
-            VIEW FULL LOG
-          </button>
+          <div className="timeline-empty">
+            <Clock3 size={16} />
+            <strong>Event history unavailable</strong>
+            <small>Only backend-screened conjunction results are shown here. A mission event log is not available from the current API.</small>
+          </div>
         </div>
       </div>
     </section>

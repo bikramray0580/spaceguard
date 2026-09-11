@@ -18,7 +18,7 @@ export default function SimulationPanel({
           </strong>
 
           <small>
-            Predict the closest approach using prototype orbital data.
+            Open the maneuver workspace for the selected backend conjunction.
           </small>
         </div>
 
@@ -32,7 +32,7 @@ export default function SimulationPanel({
 
           {simulation?.active
             ? 'SIMULATION RUNNING...'
-            : 'RUN SIMULATION'}
+            : 'OPEN SIMULATION WORKSPACE'}
         </button>
       </div>
 
@@ -79,10 +79,6 @@ export default function SimulationPanel({
             </div>
           </div>
 
-          <small className="simulation-disclaimer">
-            Prototype simulation using mock orbital data.
-            Not scientifically accurate.
-          </small>
         </div>
       )}
     </>

@@ -206,7 +206,7 @@ export default function ContextPanel({
         <div className="simulation-context">
           {selectedThreat ? (
             <>
-              <p>Run a closest-approach assessment for the selected real conjunction.</p>
+              <p>Open the maneuver workspace for the selected real conjunction.</p>
               <strong>
                 {selectedThreat.objectAName || selectedThreat.objectA} ×{' '}
                 {selectedThreat.objectBName || selectedThreat.objectB}
@@ -215,28 +215,15 @@ export default function ContextPanel({
                 {selectedThreat.distance} · {selectedThreat.velocity} ·{' '}
                 {selectedThreat.riskLevel}
               </small>
-              {simulation.active && (
-                <div className="simulation-progress">
-                  <i style={{ width: `${simulation.progress}%` }} />
-                  <span>{simulation.progress}% processing</span>
-                </div>
-              )}
               <button
                 type="button"
                 className="context-cta"
-                disabled={simulation.active}
                 onClick={onRunSimulation}
               >
-                {simulation.active ? 'Simulation running' : 'Run simulation'}{' '}
+                Open simulation workspace{' '}
                 <ArrowRight size={17} />
               </button>
-              {simulation.result && (
-                <small className="result-line">
-                  Result: {simulation.result.missDistanceKm} km miss distance ·{' '}
-                  {simulation.result.riskLevel}
-                </small>
-              )}
-            </>
+           </>
           ) : (
             <div className="context-empty-state">
               Select a backend-screened conjunction first.
