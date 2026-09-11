@@ -30,6 +30,7 @@ def maneuver(request: ManeuverRequest):
             request.object_id,
             request.start,
             request.end,
+            request.step_minutes,
             request.delta_v_m_s,
             request.direction,
             request.execution_time,
