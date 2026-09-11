@@ -1,0 +1,241 @@
+/* =========================================================
+   SPACEGUARD — WHAT-IF READABILITY + LAYOUT PASS
+   Presentation-only overrides. No simulation/data behavior.
+   ========================================================= */
+
+/* Keep the three command-center zones physically separated from the bottom bar. */
+@media (min-width: 1201px) {
+  .simulation-page .simulation-config {
+    top: 165px !important;
+    left: 40px !important;
+    width: 360px !important;
+    height: calc(100dvh - 285px) !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+  }
+
+  .simulation-page .simulation-status {
+    top: 176px !important;
+    right: 40px !important;
+    width: 340px !important;
+  }
+
+  .simulation-page .simulation-bottom-bar {
+    right: 40px !important;
+    left: 40px !important;
+    bottom: 28px !important;
+  }
+}
+
+/* Give the center viewport breathing room so the Earth remains the visual anchor. */
+.simulation-page .mission-viewport {
+  padding-bottom: 96px;
+}
+
+/* Slightly larger typography throughout the simulation controls. */
+.simulation-page .simulation-heading .eyebrow {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-heading h1 {
+  font-size: 26px;
+}
+
+.simulation-page .simulation-heading p {
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.simulation-page .simulation-panel-heading strong {
+  font-size: 16px;
+}
+
+.simulation-page .simulation-ready-dot {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-section {
+  gap: 9px;
+  padding: 13px 0;
+}
+
+.simulation-page .simulation-label,
+.simulation-page .simulation-label-row,
+.simulation-page .simulation-muted {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-scenario strong {
+  font-size: 11px;
+}
+
+.simulation-page .simulation-scenario small {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-select,
+.simulation-page .simulation-field,
+.simulation-page .simulation-time-window {
+  font-size: 11px;
+}
+
+.simulation-page .simulation-select select,
+.simulation-page .simulation-field select,
+.simulation-page .simulation-field input,
+.simulation-page .simulation-parameters select {
+  font-size: 11px;
+}
+
+.simulation-page .simulation-field > span,
+.simulation-page .simulation-parameters label > span {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-field-help,
+.simulation-page .simulation-help,
+.simulation-page .simulation-data-note {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-time-window span {
+  font-size: 8px;
+}
+
+.simulation-page .simulation-time-window strong {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-threat-strip > span {
+  font-size: 8px;
+}
+
+.simulation-page .simulation-threat-strip strong {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-advanced-toggle {
+  font-size: 11px;
+}
+
+.simulation-page .simulation-advanced-body span,
+.simulation-page .simulation-advanced-body strong {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-primary,
+.simulation-page .simulation-secondary {
+  font-size: 11px;
+}
+
+.simulation-page .simulation-status-title strong {
+  font-size: 14px;
+}
+
+.simulation-page .simulation-status-title > span {
+  font-size: 11px;
+}
+
+.simulation-page .simulation-status-meta span {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-progress-row {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-progress-row strong {
+  font-size: 10px;
+}
+
+.simulation-page .simulation-step-list span {
+  font-size: 8px;
+}
+
+.simulation-page .simulation-risk-summary > span {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-risk-summary > strong {
+  font-size: 17px;
+}
+
+.simulation-page .simulation-risk-summary > small {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-bottom-copy strong {
+  font-size: 11px;
+}
+
+.simulation-page .simulation-speed > span,
+.simulation-page .simulation-speed button {
+  font-size: 9px;
+}
+
+.simulation-page .simulation-disclaimer {
+  font-size: 8px;
+}
+
+/* Never let the fixed result surface collide with the side controls. */
+@media (min-width: 1201px) {
+  .simulation-page .simulation-complete-card {
+    top: 104px !important;
+    bottom: 96px !important;
+    width: min(980px, calc(100vw - 470px)) !important;
+    max-height: calc(100dvh - 200px) !important;
+  }
+}
+
+/* At reduced widths, make the controls stack instead of squeezing the center. */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .simulation-page .simulation-config {
+    top: 145px !important;
+    left: 24px !important;
+    width: 330px !important;
+    max-height: calc(100dvh - 250px) !important;
+  }
+
+  .simulation-page .simulation-status {
+    top: 150px !important;
+    right: 24px !important;
+    width: 300px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .simulation-page .mission-viewport {
+    padding-bottom: 90px;
+  }
+
+  .simulation-page .simulation-config {
+    max-height: 57dvh !important;
+  }
+
+  .simulation-page .simulation-heading h1 {
+    font-size: 23px;
+  }
+}
+
+@media (max-width: 680px) {
+  .simulation-page .mission-viewport {
+    padding-bottom: 150px;
+  }
+
+  .simulation-page .simulation-config {
+    max-height: 49dvh !important;
+  }
+
+  .simulation-page .simulation-heading h1 {
+    font-size: 24px;
+  }
+
+  .simulation-page .simulation-status-title strong {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .simulation-page * {
+    scroll-behavior: auto;
+  }
+}
