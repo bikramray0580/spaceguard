@@ -1,0 +1,240 @@
+.simulation-page .simulation-complete-card {
+  position: fixed !important;
+  z-index: 30 !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: 74px !important;
+  width: min(980px, calc(100vw - 150px)) !important;
+  max-height: calc(100vh - 150px) !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 22px !important;
+  display: block !important;
+  overflow-y: auto !important;
+  transform: translateX(-50%) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(103, 168, 220, 0.28) !important;
+  background: linear-gradient(145deg, rgba(7, 20, 33, 0.97), rgba(2, 9, 16, 0.96)) !important;
+  box-shadow: 0 35px 100px rgba(0,0,0,.58), 0 0 70px rgba(45,130,190,.08), inset 0 1px rgba(255,255,255,.04) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  animation: sg-result-enter .38s cubic-bezier(.22,.8,.28,1) both !important;
+}
+
+.simulation-page:has(.simulation-complete-card)::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 5, 10, .38);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 210px !important;
+  align-items: start !important;
+  gap: 18px !important;
+  padding: 0 42px 16px 0 !important;
+  border-bottom: 1px solid rgba(103,143,177,.11) !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-header h2 {
+  margin: 6px 0 0 !important;
+  font-size: clamp(20px, 2vw, 26px) !important;
+  line-height: 1.12 !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-header p {
+  max-width: 620px !important;
+  margin-top: 8px !important;
+  font-size: 10px !important;
+  line-height: 1.6 !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-direction {
+  min-width: 0 !important;
+  width: auto !important;
+  padding: 12px 13px !important;
+  border-radius: 11px !important;
+  text-align: left !important;
+  background: rgba(2,12,21,.55) !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-direction > strong {
+  font-size: 13px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-comparison-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) 78px minmax(0,1fr) !important;
+  gap: 14px !important;
+  padding: 17px 0 14px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-comparison-metric {
+  min-height: 52px !important;
+  padding: 10px 11px !important;
+  border-radius: 10px !important;
+  background: rgba(3,12,21,.44) !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-comparison-metric > span {
+  font-size: 8px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-comparison-metric > strong {
+  font-size: 10px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-intel {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 10px !important;
+  margin-top: 12px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-intel-card {
+  min-width: 0 !important;
+  min-height: 120px !important;
+  padding: 13px 14px !important;
+  border-radius: 11px !important;
+  background: rgba(8,21,34,.44) !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-intel-card > strong {
+  font-size: 10px !important;
+  line-height: 1.55 !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-ml-summary {
+  margin-top: 9px !important;
+  gap: 7px !important;
+  font-size: 9px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-result-note {
+  margin-top: 13px !important;
+  padding-top: 12px !important;
+  font-size: 9px !important;
+}
+
+.simulation-page .simulation-complete-card .simulation-complete-close {
+  top: 12px !important;
+  right: 12px !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.simulation-page .simulation-status:has(.simulation-state.running) {
+  border-color: rgba(96,184,235,.4) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.38), 0 0 38px rgba(49,151,211,.12), inset 0 1px rgba(255,255,255,.035) !important;
+  animation: sg-status-breathe 2.2s ease-in-out infinite !important;
+}
+
+.simulation-page .simulation-state.running {
+  position: relative;
+  padding-left: 19px !important;
+}
+
+.simulation-page .simulation-state.running::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -4px;
+  border: 1px solid rgba(144,234,255,.34);
+  border-top-color: #8ce8ff;
+  border-radius: 50%;
+  animation: sg-spinner .8s linear infinite;
+}
+
+.simulation-page .simulation-progress-track {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.simulation-page .simulation-progress-track::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(225,250,255,.8), transparent);
+  animation: sg-glint 1.15s ease-in-out infinite;
+}
+
+.simulation-page:has(.simulation-state.running) .simulation-vignette {
+  animation: sg-vignette 2.8s ease-in-out infinite;
+}
+
+.simulation-page:has(.simulation-state.running) .simulation-bottom-copy > svg {
+  animation: sg-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes sg-result-enter {
+  from { opacity: 0; transform: translateX(-50%) translateY(18px) scale(.985); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes sg-status-breathe {
+  0%,100% { box-shadow: 0 24px 70px rgba(0,0,0,.38), 0 0 30px rgba(49,151,211,.07), inset 0 1px rgba(255,255,255,.035); }
+  50% { box-shadow: 0 26px 74px rgba(0,0,0,.38), 0 0 44px rgba(49,151,211,.14), inset 0 1px rgba(255,255,255,.035); }
+}
+
+@keyframes sg-spinner { to { transform: rotate(360deg); } }
+@keyframes sg-glint { 0% { transform: translateX(0); opacity: 0; } 20% { opacity: .9; } 80% { opacity: .75; } 100% { transform: translateX(440%); opacity: 0; } }
+@keyframes sg-vignette { 0%,100% { opacity: .82; } 50% { opacity: 1; } }
+@keyframes sg-pulse { 0%,100% { opacity: .62; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.06); } }
+
+@media (max-width: 1100px) {
+  .simulation-page .simulation-complete-card {
+    width: min(920px, calc(100vw - 90px)) !important;
+    left: 50% !important;
+    right: auto !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .simulation-page .simulation-complete-card {
+    left: 18px !important;
+    right: 18px !important;
+    bottom: 18px !important;
+    width: auto !important;
+    transform: none !important;
+    max-height: calc(100vh - 36px) !important;
+  }
+
+  .simulation-page .simulation-complete-card .simulation-result-header,
+  .simulation-page .simulation-complete-card .simulation-comparison-grid,
+  .simulation-page .simulation-complete-card .simulation-result-intel {
+    grid-template-columns: 1fr !important;
+  }
+
+  .simulation-page .simulation-complete-card .simulation-comparison-column.after {
+    padding-left: 0 !important;
+    border-left: 0 !important;
+    padding-top: 10px !important;
+    border-top: 1px solid rgba(103,143,177,.1) !important;
+  }
+
+  .simulation-page .simulation-complete-card .simulation-result-direction {
+    width: 100% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .simulation-page .simulation-complete-card,
+  .simulation-page .simulation-status:has(.simulation-state.running),
+  .simulation-page .simulation-state.running::before,
+  .simulation-page .simulation-progress-track::after,
+  .simulation-page:has(.simulation-state.running) .simulation-vignette,
+  .simulation-page:has(.simulation-state.running) .simulation-bottom-copy > svg {
+    animation: none !important;
+  }
+}
