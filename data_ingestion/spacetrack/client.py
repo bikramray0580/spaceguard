@@ -1,4 +1,4 @@
-"""Minimal Space-Track GP test client."""
+"""Minimal Space-Track GP and CDM client."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from spacetrack import SpaceTrackClient
 load_dotenv()
 
 
-def fetch_space_track_gp(norad_cat_id: int = 25544) -> list[dict]:
+def _get_client() -> SpaceTrackClient:
     username = os.getenv("SPACETRACK_USERNAME")
     password = os.getenv("SPACETRACK_PASSWORD")
 
@@ -19,13 +19,39 @@ def fetch_space_track_gp(norad_cat_id: int = 25544) -> list[dict]:
             "Missing SPACETRACK_USERNAME or SPACETRACK_PASSWORD in .env"
         )
 
-    client = SpaceTrackClient(
+    return SpaceTrackClient(
         identity=username,
         password=password,
     )
 
+
+def fetch_space_track_gp(norad_cat_id: int = 25544) -> list[dict]:
+    """Fetch GP data for one object."""
+    client = _get_client()
+
     try:
-        records = client.gp(norad_cat_id=norad_cat_id)
-        return records
+        return client.gp(norad_cat_id=norad_cat_id)
+    finally:
+        client.close()
+
+
+def fetch_space_track_cdm() -> list[dict]:
+    """Fetch available conjunction data messages.
+
+    Returns an empty list when the account is not authorized
+    to access the CDM endpoint.
+    """
+    client = _get_client()
+
+    try:
+        return client.cdm()
+    except Exception as exc:
+        message = str(exc)
+
+        if "401" in message or "Not Authorized" in message:
+            print("Space-Track CDM access is not authorized for this account.")
+            return []
+
+        raise
     finally:
         client.close()
