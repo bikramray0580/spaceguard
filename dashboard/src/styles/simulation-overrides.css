@@ -1,0 +1,251 @@
+/* Final What-If presentation and motion pass.
+   Scoped to .simulation-page so frozen pages are unaffected. */
+
+.simulation-complete-card {
+  z-index: 12;
+  display: block;
+  width: min(860px, calc(100vw - 500px));
+  min-height: 0;
+  max-height: min(70dvh, 720px);
+  bottom: 86px;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.46),
+    0 0 0 1px rgba(121, 181, 226, 0.025),
+    inset 0 1px rgba(255, 255, 255, 0.035);
+  animation: simulation-result-in 320ms cubic-bezier(0.22, 0.8, 0.28, 1) both;
+}
+
+.simulation-page:has(.simulation-complete-card)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: radial-gradient(circle at 55% 46%, rgba(25, 76, 115, 0.06), rgba(0, 0, 0, 0.12) 48%, rgba(0, 0, 0, 0.22));
+}
+
+.simulation-result-header {
+  padding-right: 42px;
+}
+
+.simulation-result-header h2 {
+  font-size: clamp(18px, 1.55vw, 22px);
+  line-height: 1.2;
+}
+
+.simulation-result-header p {
+  max-width: 520px;
+  font-size: 9px;
+}
+
+.simulation-result-direction {
+  flex: 0 0 180px;
+  min-width: 180px;
+  padding: 11px 12px;
+  border-radius: 10px;
+}
+
+.simulation-result-direction > strong {
+  font-size: 12px;
+}
+
+.simulation-comparison-grid {
+  grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px 0 13px;
+}
+
+.simulation-comparison-metric {
+  min-height: 46px;
+  padding: 9px 10px;
+}
+
+.simulation-comparison-metric > strong {
+  font-size: 9px;
+}
+
+.simulation-result-intel {
+  grid-template-columns: minmax(0, 1.35fr) minmax(145px, 0.85fr) minmax(145px, 0.85fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.simulation-result-intel-card {
+  min-height: 108px;
+  padding: 12px 13px;
+}
+
+.simulation-result-intel-card > strong {
+  max-width: 100%;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.simulation-ml-summary {
+  gap: 6px;
+  font-size: 9px;
+}
+
+.simulation-result-note {
+  margin-top: 12px;
+  padding-top: 11px;
+  font-size: 8px;
+}
+
+.simulation-complete-close {
+  top: 11px;
+  right: 11px;
+  width: 28px;
+  height: 28px;
+}
+
+.simulation-status:has(.simulation-state.running) {
+  border-color: rgba(93, 177, 228, 0.34);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.34),
+    0 0 30px rgba(52, 143, 197, 0.08),
+    inset 0 1px rgba(255, 255, 255, 0.03);
+  animation: simulation-status-breathe 2.6s ease-in-out infinite;
+}
+
+.simulation-state.running {
+  position: relative;
+  min-width: 64px;
+  padding-left: 18px;
+}
+
+.simulation-state.running::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -4px;
+  border: 1px solid rgba(144, 234, 255, 0.35);
+  border-top-color: #8ce8ff;
+  border-radius: 50%;
+  animation: simulation-spinner 0.85s linear infinite;
+}
+
+.simulation-progress-track::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -28%;
+  width: 28%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(214, 249, 255, 0.65), transparent);
+  animation: simulation-progress-glint 1.25s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.simulation-page:has(.simulation-state.running) .simulation-vignette {
+  background:
+    linear-gradient(90deg, rgba(2, 7, 13, 0.74), transparent 36%),
+    linear-gradient(270deg, rgba(2, 7, 13, 0.64), transparent 38%),
+    radial-gradient(circle at 52% 50%, rgba(37, 112, 159, 0.05), transparent 34%),
+    linear-gradient(0deg, rgba(2, 7, 13, 0.63), transparent 25%);
+  animation: simulation-vignette-breathe 2.8s ease-in-out infinite;
+}
+
+.simulation-page:has(.simulation-state.running) .simulation-bottom-copy > svg {
+  animation: simulation-icon-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes simulation-result-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(14px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes simulation-spinner {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes simulation-status-breathe {
+  0%, 100% {
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34), 0 0 30px rgba(52, 143, 197, 0.06), inset 0 1px rgba(255, 255, 255, 0.03);
+  }
+  50% {
+    box-shadow: 0 26px 68px rgba(0, 0, 0, 0.34), 0 0 34px rgba(52, 143, 197, 0.12), inset 0 1px rgba(255, 255, 255, 0.03);
+  }
+}
+
+@keyframes simulation-progress-glint {
+  0% { transform: translateX(0); opacity: 0; }
+  18% { opacity: 0.85; }
+  80% { opacity: 0.65; }
+  100% { transform: translateX(520%); opacity: 0; }
+}
+
+@keyframes simulation-vignette-breathe {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+
+@keyframes simulation-icon-pulse {
+  0%, 100% { opacity: 0.65; transform: scale(0.96); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@media (max-width: 1100px) {
+  .simulation-complete-card {
+    left: 410px;
+    right: 24px;
+    width: auto;
+    transform: none;
+    bottom: 82px;
+  }
+
+  @keyframes simulation-result-in {
+    0% { opacity: 0; transform: translateY(14px) scale(0.985); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
+@media (max-width: 820px) {
+  .simulation-complete-card {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    width: auto;
+    max-height: calc(100dvh - 36px);
+  }
+
+  .simulation-result-intel {
+    grid-template-columns: 1fr;
+  }
+
+  .simulation-result-header {
+    gap: 12px;
+  }
+
+  .simulation-result-direction {
+    width: 100%;
+    min-width: 0;
+    flex-basis: auto;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .simulation-page:has(.simulation-state.running) .simulation-status,
+  .simulation-ready-dot i.running,
+  .simulation-step-list span.current i,
+  .simulation-state.running::before,
+  .simulation-progress-track::after,
+  .simulation-page:has(.simulation-state.running) .simulation-vignette,
+  .simulation-page:has(.simulation-state.running) .simulation-bottom-copy > svg,
+  .simulation-complete-card {
+    animation: none !important;
+  }
+}
