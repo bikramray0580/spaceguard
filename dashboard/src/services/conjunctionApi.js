@@ -32,6 +32,7 @@ export async function screenConjunction(
 export function normalizeRiskLevel(value) {
   const normalized = String(value || 'UNKNOWN').toUpperCase()
 
+  if (normalized === 'CRITICAL') return 'CRITICAL'
   if (normalized === 'MEDIUM' || normalized === 'MODERATE') return 'MEDIUM'
   if (normalized === 'HIGH') return 'HIGH'
   if (normalized === 'LOW') return 'LOW'
@@ -64,9 +65,16 @@ export function toThreatViewModel(
     level: riskLevel,
     riskReason: result.risk_reason || 'Backend did not provide a risk explanation.',
     mlPrediction: result.ml_prediction || null,
+    trend: result.trend || null,
+    recommendedAction: result.recommended_action || null,
+    confidence: result.confidence || null,
+    pc: result.pc ?? null,
+    pcStatus: result.pc_status || null,
+    covarianceStatus: result.covariance_status || null,
+    provenance: result.provenance || null,
     tca: result.time_of_closest_approach,
     tcaDate: tca,
-    source: 'backend',
+    source: result.provenance?.source || 'backend',
   }
 }
 
