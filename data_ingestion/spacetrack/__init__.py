@@ -1,5 +1,3 @@
-"""Space-Track TLE acquisition helpers."""
+from data_ingestion.spacetrack.client import fetch_space_track_gp
 
-from data_ingestion.spacetrack.client import load_spacetrack_tles
-
-__all__ = ["load_spacetrack_tles"]
+__all__ = ["fetch_space_track_gp"]
