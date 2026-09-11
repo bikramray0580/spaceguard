@@ -156,6 +156,146 @@ class TestSGP4Propagator(unittest.TestCase):
                 -5,
             )
 
+    def test_naive_timestamp_is_treated_as_utc(self):
+        naive = datetime(2019, 12, 9, 16, 38, 30)
+        state = self.propagator.propagate(ISS_TLE_LINE1, ISS_TLE_LINE2, naive)
+        self.assertEqual(state.timestamp, ISS_EPOCH)
+        self.assertEqual(state.timestamp.tzinfo, timezone.utc)
+
+    def test_offset_timestamp_is_normalized_to_utc(self):
+        offset = timezone(timedelta(hours=-5))
+        local = datetime(2019, 12, 9, 11, 38, 30, tzinfo=offset)
+        state = self.propagator.propagate(ISS_TLE_LINE1, ISS_TLE_LINE2, local)
+        self.assertEqual(state.timestamp, ISS_EPOCH)
+        utc_state = self.propagator.propagate(
+            ISS_TLE_LINE1,
+            ISS_TLE_LINE2,
+            ISS_EPOCH,
+        )
+        self.assertEqual(state.position, utc_state.position)
+        self.assertEqual(state.velocity, utc_state.velocity)
+
+    def test_window_timestamps_are_normalized_to_utc(self):
+        offset = timezone(timedelta(hours=2))
+        start_local = datetime(2019, 12, 9, 18, 38, 30, tzinfo=offset)
+        end_local = datetime(2019, 12, 9, 18, 39, 30, tzinfo=offset)
+        states = self.propagator.propagate_window(
+            ISS_TLE_LINE1,
+            ISS_TLE_LINE2,
+            start_local,
+            end_local,
+            30,
+        )
+        self.assertTrue(all(state.timestamp.tzinfo == timezone.utc for state in states))
+        self.assertEqual(states[0].timestamp, ISS_EPOCH)
+        self.assertEqual(states[-1].timestamp, ISS_EPOCH + timedelta(seconds=60))
+
+    def test_start_time_equal_end_time_returns_one_state(self):
+        states = self.propagator.propagate_window(
+            ISS_TLE_LINE1,
+            ISS_TLE_LINE2,
+            ISS_EPOCH,
+            ISS_EPOCH,
+            10,
+        )
+        self.assertEqual(len(states), 1)
+        self.assertEqual(states[0].timestamp, ISS_EPOCH)
+        self.assertIsInstance(states[0], PropagatedState)
+
+    def test_propagation_is_deterministic(self):
+        first = self.propagator.propagate(ISS_TLE_LINE1, ISS_TLE_LINE2, ISS_EPOCH)
+        second = self.propagator.propagate(ISS_TLE_LINE1, ISS_TLE_LINE2, ISS_EPOCH)
+        self.assertEqual(first, second)
+
+    def test_window_propagation_is_deterministic(self):
+        end_time = ISS_EPOCH + timedelta(seconds=60)
+        first = self.propagator.propagate_window(
+            ISS_TLE_LINE1,
+            ISS_TLE_LINE2,
+            ISS_EPOCH,
+            end_time,
+            20,
+        )
+        second = self.propagator.propagate_window(
+            ISS_TLE_LINE1,
+            ISS_TLE_LINE2,
+            ISS_EPOCH,
+            end_time,
+            20,
+        )
+        self.assertEqual(first, second)
+
+    def test_output_frame_is_teme(self):
+        state = self.propagator.propagate(ISS_TLE_LINE1, ISS_TLE_LINE2, ISS_EPOCH)
+        self.assertEqual(state.frame, "TEME")
+        states = self.propagator.propagate_window(
+            ISS_TLE_LINE1,
+            ISS_TLE_LINE2,
+            ISS_EPOCH,
+            ISS_EPOCH + timedelta(seconds=40),
+            20,
+        )
+        self.assertTrue(all(item.frame == "TEME" for item in states))
+
+    def test_position_and_velocity_units(self):
+        state = self.propagator.propagate(ISS_TLE_LINE1, ISS_TLE_LINE2, ISS_EPOCH)
+        self.assertEqual(state.position_units, "km")
+        self.assertEqual(state.velocity_units, "km/s")
+        states = self.propagator.propagate_window(
+            ISS_TLE_LINE1,
+            ISS_TLE_LINE2,
+            ISS_EPOCH,
+            ISS_EPOCH + timedelta(seconds=40),
+            20,
+        )
+        self.assertTrue(all(item.position_units == "km" for item in states))
+        self.assertTrue(all(item.velocity_units == "km/s" for item in states))
+
+    def test_empty_tle_lines_are_rejected(self):
+        with self.assertRaises(ValueError):
+            self.propagator.propagate("", ISS_TLE_LINE2, ISS_EPOCH)
+        with self.assertRaises(ValueError):
+            self.propagator.propagate(ISS_TLE_LINE1, "   ", ISS_EPOCH)
+
+    def test_non_string_tle_lines_are_rejected(self):
+        with self.assertRaises(TypeError):
+            self.propagator.propagate(None, ISS_TLE_LINE2, ISS_EPOCH)
+        with self.assertRaises(TypeError):
+            self.propagator.propagate(ISS_TLE_LINE1, 25544, ISS_EPOCH)
+
+    def test_invalid_window_timestamps_are_rejected(self):
+        with self.assertRaises(TypeError):
+            self.propagator.propagate_window(
+                ISS_TLE_LINE1,
+                ISS_TLE_LINE2,
+                "2019-12-09T16:38:30Z",
+                ISS_EPOCH + timedelta(seconds=10),
+                10,
+            )
+        with self.assertRaises(TypeError):
+            self.propagator.propagate_window(
+                ISS_TLE_LINE1,
+                ISS_TLE_LINE2,
+                ISS_EPOCH,
+                12345,
+                10,
+            )
+
+    def test_non_numeric_step_is_rejected(self):
+        with self.assertRaises(TypeError):
+            self.propagator.propagate_window(
+                ISS_TLE_LINE1,
+                ISS_TLE_LINE2,
+                ISS_EPOCH,
+                ISS_EPOCH + timedelta(seconds=10),
+                "10",
+            )
+
+    def test_sgp4_propagation_failure_is_rejected(self):
+        far_future = datetime(2100, 1, 1, tzinfo=timezone.utc)
+        with self.assertRaises(ValueError):
+            self.propagator.propagate(ISS_TLE_LINE1, ISS_TLE_LINE2, far_future)
+
 
 if __name__ == "__main__":
     unittest.main()
