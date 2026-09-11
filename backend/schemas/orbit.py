@@ -1,16 +1,13 @@
 """Orbit propagation API schemas."""
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
-
 from ..config import DEFAULT_STEP_MINUTES
-
 
 class PropagateRequest(BaseModel):
     object_id: str | list[str] | None = None
     start: datetime
     end: datetime
     step_minutes: float = Field(default=DEFAULT_STEP_MINUTES, gt=0, le=60)
-
     @field_validator("start", "end")
     @classmethod
     def require_aware(cls, value: datetime) -> datetime:
@@ -18,25 +15,25 @@ class PropagateRequest(BaseModel):
             raise ValueError("timestamp must be timezone-aware (use UTC)")
         return value
 
-
 class Position(BaseModel):
     x_km: float
     y_km: float
     z_km: float
-
 
 class Velocity(BaseModel):
     x_km_s: float
     y_km_s: float
     z_km_s: float
 
-
-class OrbitResult(BaseModel):
-    object_id: str
-    object_name: str
+class OrbitStateResult(BaseModel):
     timestamp: datetime
     position: Position
     velocity: Velocity
     coordinate_frame: str
     position_units: str
     velocity_units: str
+
+class OrbitResult(BaseModel):
+    object_id: str
+    object_name: str
+    states: list[OrbitStateResult]
