@@ -82,3 +82,4 @@ class CatalogueScreenResponse(BaseModel):
     sample_count: int
     threshold_km: float
     candidates: list[ScreeningCandidateResponse]
+    assessments: list[ConjunctionResponse]

@@ -12,17 +12,7 @@ from ..services.conjunction_service import screen_catalogue, screen_conjunction
 router = APIRouter(prefix="/api/conjunctions", tags=["conjunctions"])
 
 
-@router.post("/screen", response_model=ConjunctionResponse)
-def screen(request: ScreenRequest):
-    try:
-        result, assessment = screen_conjunction(
-            request.object_a, request.object_b, request.start, request.end
-        )
-    except KeyError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except (ValueError, TypeError) as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-
+def _conjunction_response(result, assessment) -> ConjunctionResponse:
     return ConjunctionResponse(
         object_a=result.object_a_id,
         object_b=result.object_b_id,
@@ -42,10 +32,24 @@ def screen(request: ScreenRequest):
     )
 
 
+@router.post("/screen", response_model=ConjunctionResponse)
+def screen(request: ScreenRequest):
+    try:
+        result, assessment = screen_conjunction(
+            request.object_a, request.object_b, request.start, request.end
+        )
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except (ValueError, TypeError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return _conjunction_response(result, assessment)
+
+
 @router.post("/catalogue-screen", response_model=CatalogueScreenResponse)
 def catalogue_screen(request: CatalogueScreenRequest):
     try:
-        object_ids, catalogue_count, pair_count, result = screen_catalogue(
+        object_ids, catalogue_count, pair_count, result, assessments = screen_catalogue(
             request.start,
             request.end,
             request.object_ids,
@@ -77,4 +81,5 @@ def catalogue_screen(request: CatalogueScreenRequest):
             )
             for candidate in result.candidates
         ],
+        assessments=[_conjunction_response(result, assessment) for result, assessment in assessments],
     )
