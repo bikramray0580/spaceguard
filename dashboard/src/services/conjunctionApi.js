@@ -29,6 +29,55 @@ export async function screenConjunction(
   })
 }
 
+export async function screenCatalogueConjunctions(
+  {
+    objectIds,
+    start,
+    end,
+    stepMinutes = 5,
+    distanceThresholdKm,
+    maxObjects,
+  },
+  options = {},
+) {
+  if (!start || !end) {
+    throw new Error('Catalogue screening requires a time window.')
+  }
+
+  const body = {
+    start,
+    end,
+    step_minutes: stepMinutes,
+  }
+
+  if (objectIds != null) {
+    body.object_ids = objectIds
+  }
+
+  if (distanceThresholdKm != null) {
+    body.distance_threshold_km = distanceThresholdKm
+  }
+
+  if (maxObjects != null) {
+    body.max_objects = maxObjects
+  }
+
+  return apiFetch('/api/conjunctions/catalogue-screen', {
+    method: 'POST',
+    ...options,
+    body,
+  })
+}
+
+export function assessmentsToThreatViewModels(assessments = [], objectMap = new Map()) {
+  return (Array.isArray(assessments) ? assessments : []).map((result) =>
+    toThreatViewModel(result, {
+      objectAName: objectMap.get(result.object_a)?.name,
+      objectBName: objectMap.get(result.object_b)?.name,
+    }),
+  )
+}
+
 export function normalizeRiskLevel(value) {
   const normalized = String(value || 'UNKNOWN').toUpperCase()
 

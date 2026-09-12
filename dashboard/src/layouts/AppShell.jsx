@@ -58,7 +58,6 @@ export default function AppShell() {
     objectLimit: 10,
     durationMinutes: 120,
     stepMinutes: 5,
-    concurrency: 3,
   })
 
   useEffect(() => {

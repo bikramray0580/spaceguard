@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { screenConjunction, toThreatViewModel } from '../services/conjunctionApi'
+import {
+  assessmentsToThreatViewModels,
+  screenCatalogueConjunctions,
+} from '../services/conjunctionApi'
 
 const DEFAULT_OBJECT_LIMIT = 10
 const DEFAULT_STEP_MINUTES = 5
 const DEFAULT_WINDOW_MINUTES = 120
-const DEFAULT_CONCURRENCY = 3
 
 const RISK_ORDER = {
   HIGH: 0,
@@ -49,45 +51,12 @@ function sortThreats(a, b) {
   return a.tcaDate - b.tcaDate
 }
 
-async function runWithConcurrency(tasks, concurrency, onCompleted, signal) {
-  const results = []
-  let nextIndex = 0
-
-  async function worker() {
-    while (nextIndex < tasks.length) {
-      if (signal.aborted) return
-
-      const currentIndex = nextIndex
-      nextIndex += 1
-
-      try {
-        const value = await tasks[currentIndex]()
-        results[currentIndex] = { value, error: null }
-      } catch (error) {
-        if (error?.name === 'AbortError') return
-        results[currentIndex] = { value: null, error }
-      }
-
-      onCompleted?.()
-    }
-  }
-
-  const workers = Array.from(
-    { length: Math.min(concurrency, tasks.length) },
-    () => worker(),
-  )
-
-  await Promise.all(workers)
-  return results
-}
-
 export function useThreatScreening(
   objects,
   {
     objectLimit = DEFAULT_OBJECT_LIMIT,
     durationMinutes = DEFAULT_WINDOW_MINUTES,
     stepMinutes = DEFAULT_STEP_MINUTES,
-    concurrency = DEFAULT_CONCURRENCY,
     refreshKey = 0,
   } = {},
 ) {
@@ -137,65 +106,40 @@ export function useThreatScreening(
     setStatus('loading')
     setError(null)
     setCompleted(0)
-    setAttempted(pairs.length)
+    setAttempted(1)
     setSuccessful(0)
 
-    const tasks = pairs.map(([objectA, objectB]) => async () => {
-      const payload = await screenConjunction(
+    async function loadThreats() {
+      const payload = await screenCatalogueConjunctions(
         {
-          objectA: objectA.id,
-          objectB: objectB.id,
+          objectIds: candidateObjects.map((object) => object.id),
           start: window.start,
           end: window.end,
           stepMinutes,
+          maxObjects: objectLimit,
         },
         { signal: controller.signal },
       )
 
-      const threat = toThreatViewModel(payload, {
-        objectAName: objectMap.get(payload.object_a)?.name,
-        objectBName: objectMap.get(payload.object_b)?.name,
-      })
-
-      return threat
-    })
-
-    async function loadThreats() {
-      const results = await runWithConcurrency(
-        tasks,
-        concurrency,
-        () => {
-          if (runRef.current !== runId) return
-          setCompleted((value) => value + 1)
-        },
-        controller.signal,
-      )
-
       if (controller.signal.aborted || runRef.current !== runId) return
 
-      const resolved = results
-        .filter((result) => result?.value)
-        .map((result) => result.value)
-        .sort(sortThreats)
+      const resolved = assessmentsToThreatViewModels(
+        payload?.assessments,
+        objectMap,
+      ).sort(sortThreats)
 
-      const errors = results
-        .filter((result) => result?.error)
-        .map((result) => result.error)
-
+      setCompleted(1)
       setThreats(resolved)
       setSuccessful(resolved.length)
 
       if (!resolved.length) {
-        setStatus('error')
-        setError(
-          errors[0] ||
-            new Error('No conjunction results were returned by the backend.'),
-        )
+        setStatus('connected')
+        setError(null)
         return
       }
 
-      setStatus(errors.length ? 'partial' : 'connected')
-      setError(errors.length ? errors[0] : null)
+      setStatus('connected')
+      setError(null)
     }
 
     loadThreats().catch((requestError) => {
@@ -210,10 +154,12 @@ export function useThreatScreening(
 
     return () => controller.abort()
   }, [
-    concurrency,
+    candidateObjects,
     durationMinutes,
+    objectLimit,
     objectMap,
-    pairs,
+    objects.length,
+    pairs.length,
     refreshKey,
     stepMinutes,
   ])
