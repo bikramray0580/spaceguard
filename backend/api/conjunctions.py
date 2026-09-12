@@ -36,7 +36,11 @@ def _conjunction_response(result, assessment) -> ConjunctionResponse:
 def screen(request: ScreenRequest):
     try:
         result, assessment = screen_conjunction(
-            request.object_a, request.object_b, request.start, request.end
+            request.object_a,
+            request.object_b,
+            request.start,
+            request.end,
+            request.step_minutes,
         )
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
