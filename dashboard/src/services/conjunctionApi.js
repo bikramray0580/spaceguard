@@ -29,6 +29,39 @@ export async function screenConjunction(
   })
 }
 
+export async function screenCatalogue(
+  {
+    objectIds,
+    start,
+    end,
+    stepMinutes = 5,
+    distanceThresholdKm = 1000,
+    maxObjects = 25,
+  },
+  options = {},
+) {
+  if (!start || !end) {
+    throw new Error('Catalogue screening requires a complete time window.')
+  }
+
+  if (!Number.isFinite(Number(stepMinutes)) || Number(stepMinutes) <= 0 || Number(stepMinutes) > 60) {
+    throw new Error('Screening step must be greater than 0 and no more than 60 minutes.')
+  }
+
+  return apiFetch('/api/conjunctions/catalogue-screen', {
+    method: 'POST',
+    ...options,
+    body: {
+      object_ids: objectIds?.length ? objectIds : null,
+      start,
+      end,
+      step_minutes: Number(stepMinutes),
+      distance_threshold_km: Number(distanceThresholdKm),
+      max_objects: Number(maxObjects),
+    },
+  })
+}
+
 export function normalizeRiskLevel(value) {
   const normalized = String(value || 'UNKNOWN').toUpperCase()
 
