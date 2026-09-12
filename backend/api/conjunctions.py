@@ -1,8 +1,13 @@
-"""Conjunction screening endpoint."""
+"""Conjunction screening endpoints."""
 from fastapi import APIRouter, HTTPException
-from ..schemas.conjunction import ConjunctionResponse
-from ..schemas.conjunction import ScreenRequest
-from ..services.conjunction_service import screen_conjunction
+from ..schemas.conjunction import (
+    CatalogueScreenRequest,
+    CatalogueScreenResponse,
+    ConjunctionResponse,
+    ScreeningCandidateResponse,
+    ScreenRequest,
+)
+from ..services.conjunction_service import screen_catalogue, screen_conjunction
 
 router = APIRouter(prefix="/api/conjunctions", tags=["conjunctions"])
 
@@ -34,4 +39,42 @@ def screen(request: ScreenRequest):
         pc_status=assessment.pc_status.value,
         covariance_status=assessment.quality_status,
         provenance=dict(assessment.provenance),
+    )
+
+
+@router.post("/catalogue-screen", response_model=CatalogueScreenResponse)
+def catalogue_screen(request: CatalogueScreenRequest):
+    try:
+        object_ids, catalogue_count, pair_count, result = screen_catalogue(
+            request.start,
+            request.end,
+            request.object_ids,
+            request.step_minutes,
+            request.distance_threshold_km,
+            request.max_objects,
+        )
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except (ValueError, TypeError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return CatalogueScreenResponse(
+        object_ids=list(object_ids),
+        object_count=len(object_ids),
+        catalogue_object_count=catalogue_count,
+        pair_count=pair_count,
+        candidate_count=len(result.candidates),
+        sample_count=result.sample_count,
+        threshold_km=result.threshold_km,
+        candidates=[
+            ScreeningCandidateResponse(
+                object_a=candidate.object_a_id,
+                object_b=candidate.object_b_id,
+                closest_sample_time=candidate.closest_sample_time,
+                closest_sample_distance_km=candidate.closest_sample_distance_km,
+                bracket_start=candidate.bracket_start,
+                bracket_end=candidate.bracket_end,
+            )
+            for candidate in result.candidates
+        ],
     )
